@@ -57,7 +57,13 @@ In Claude Desktop, with the server installed, the request was:
 
 > Can you use the SOLVE-IT workflow MCP to draw me a SOLVE-IT workflow that goes from laptop to acquired image (say E01)?
 
-Claude built the workflow with this server's tools (and the separate SOLVE-IT knowledge base MCP server, which was also installed). It reported that the workflow passed validation against the knowledge base with no warnings, and returned a share link that opens it in the builder.
+Claude then:
+
+1. Searched for candidate techniques with `workflow_find_techniques` (17 searches, from "disk imaging", "remove storage" and "write blocker" to "E01", "boot" and "Expert Witness Format").
+2. Read the details of seven of them, including their input and output classes, with `solveit_get_technique` from the separate [SOLVE-IT MCP server](https://github.com/CKE-Proto/mcp_solve-it), which was also installed.
+3. Built the workflow with a single `workflow_create` call, which validated it against the knowledge base, wrote the file and returned a share link.
+
+It reported that the workflow passed validation with no warnings.
 
 ![The laptop to E01 workflow in the SOLVE-IT Workflow Builder: a decision on whether the disk can be removed leads to two zoned routes, which join before copying sectors, hashing and storing the image in parallel, and verifying the hash](docs/images/laptop-to-e01.png)
 
