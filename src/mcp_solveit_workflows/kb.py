@@ -154,6 +154,7 @@ class KnowledgeBase:
         self.revision = revision
         self.load_warnings: list[str] = list(load_warnings or [])
         self._parents: dict[str, str] = {}
+        self._class_iris: list[str] | None = None
         for tid in sorted(techniques):
             subs = techniques[tid].get("subtechniques") or []
             if not isinstance(subs, list):
@@ -194,6 +195,43 @@ class KnowledgeBase:
 
     def parent_of(self, tid: str) -> str | None:
         return self._parents.get(tid)
+
+    def class_iris(self) -> list[str]:
+        """Every ontology class a technique declares as an input or output."""
+        if self._class_iris is None:
+            iris: set[str] = set()
+            for item in self._techniques.values():
+                for key in ("CASE_input_classes", "CASE_output_classes"):
+                    value = item.get(key)
+                    if isinstance(value, list):
+                        iris.update(v for v in value if isinstance(v, str) and v)
+            self._class_iris = sorted(iris)
+        return self._class_iris
+
+    def resolve_class(self, name: str) -> str:
+        """The full IRI for a class name, or `name` unchanged when it cannot be
+        resolved to exactly one.
+
+        Accepts a full IRI (kept as it is), a prefixed name such as
+        uco-observable:Computer (the builder's prefixes), a short name such as
+        Computer, or a path such as observable/Computer as the builder displays
+        it. Short names and paths are looked up among the classes the knowledge
+        base declares: an exact-case match wins, otherwise a unique match
+        ignoring case.
+        """
+        n = name.strip()
+        if not n or n.startswith(("http://", "https://")):
+            return name
+        for prefix, ns in CLASS_PREFIXES.items():
+            if n.startswith(prefix):
+                return ns + n[len(prefix) :]
+        tail = "/" + n.strip("/")
+        hits = [iri for iri in self.class_iris() if iri.rstrip("/").endswith(tail)]
+        if len(hits) == 1:
+            return hits[0]
+        folded = tail.casefold()
+        hits = [iri for iri in self.class_iris() if iri.rstrip("/").casefold().endswith(folded)]
+        return hits[0] if len(hits) == 1 else name
 
     def is_subtechnique_of(self, sub: str, parent: str) -> bool:
         return self._parents.get(sub) == parent
@@ -344,3 +382,11 @@ def _class_names(value: object) -> list[str]:
     if not isinstance(value, list):
         return []
     return [v.rstrip("/").rsplit("/", 1)[-1] for v in value if isinstance(v, str) and v]
+
+
+# The builder's class prefixes (targetProperties.ts PREFIXES).
+CLASS_PREFIXES = {
+    "uco-observable:": "https://ontology.unifiedcyberontology.org/uco/observable/",
+    "uco-core:": "https://ontology.unifiedcyberontology.org/uco/core/",
+    "solveit-observable:": "https://ontology.solveit-df.org/solveit/observable/",
+}

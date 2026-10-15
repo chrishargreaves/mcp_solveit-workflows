@@ -21,6 +21,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from .model import (
     DFT_ID,
     NODE_DATA_KEYS,
+    ClassResolver,
     EdgeInput,
     LabelCorner,
     NodeInput,
@@ -30,10 +31,13 @@ from .model import (
     Workflow,
     WorkflowError,
     ZoneInput,
+    _keep,
     add_to_workflow,
     check_route_keys,
     is_number,
 )
+
+_CLASS_KEYS = frozenset({"inputClasses", "outputClasses", "classes"})
 
 # Data keys a set-data operation may change, per builder node type. Fork and
 # join `mode` follows the node type, so it is not settable; unknown node types
@@ -177,7 +181,12 @@ def _check_value(node_ref: str, key: str, value: Any) -> None:
         check_route_keys(node_ref, value)
 
 
-def _set_data(wf: Workflow, ops: Sequence[SetDataInput], key_to_id: dict[str, str]) -> None:
+def _set_data(
+    wf: Workflow,
+    ops: Sequence[SetDataInput],
+    key_to_id: dict[str, str],
+    resolve_class: ClassResolver = _keep,
+) -> None:
     for op in ops:
         node_id = key_to_id.get(op.node, op.node)
         node = wf.node(node_id)
@@ -208,6 +217,8 @@ def _set_data(wf: Workflow, ops: Sequence[SetDataInput], key_to_id: dict[str, st
         for key, value in op.fields.items():
             if value is None:
                 data.pop(key, None)
+            elif key in _CLASS_KEYS:
+                data[key] = list(dict.fromkeys(resolve_class(c) for c in value))
             else:
                 data[key] = copy.deepcopy(value)
 
@@ -216,6 +227,7 @@ def apply_update(
     wf: Workflow,
     *,
     parent_of: ParentOf,
+    resolve_class: ClassResolver = _keep,
     add_nodes: Sequence[NodeInput] = (),
     add_edges: Sequence[EdgeInput] = (),
     remove_ids: Sequence[str] = (),
@@ -243,9 +255,11 @@ def apply_update(
             raise WorkflowError(f"{what} refers to '{ref}', which this update removes.")
 
     work = Workflow(copy.deepcopy(wf.doc))
-    built = add_to_workflow(work, list(add_nodes), list(add_edges), list(selections), parent_of)
+    built = add_to_workflow(
+        work, list(add_nodes), list(add_edges), list(selections), parent_of, resolve_class
+    )
     dropped = _remove(work, remove_ids)
-    _set_data(work, set_data, built.key_to_id)
+    _set_data(work, set_data, built.key_to_id, resolve_class)
 
     wf.doc = work.doc
     return UpdateResult(

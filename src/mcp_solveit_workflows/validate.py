@@ -164,6 +164,28 @@ def _check_technique(
             )
 
 
+def _check_classes(
+    out: _Collector, ref: str, nid: str | None, d: dict[str, Any], kb: KnowledgeBase | None
+) -> None:
+    """Class names that are not full IRIs: the builder matches and exports classes
+    by IRI, so a short name shows but connects to nothing."""
+    for key in ("classes", "inputClasses", "outputClasses"):
+        value = d.get(key)
+        if not isinstance(value, list):
+            continue
+        for c in value:
+            if not isinstance(c, str) or c.startswith(("http://", "https://")):
+                continue
+            iri = kb.resolve_class(c) if kb is not None else c
+            hint = f" Use {_q(iri)}." if iri != c else " No knowledge base class matches it."
+            out.warn(
+                "class_not_iri",
+                f"{ref}: class {_q(c)} in '{key}' is not a full ontology IRI, so the builder "
+                f"cannot match it to technique classes or export it.{hint}",
+                node=nid,
+            )
+
+
 def _check_data(
     out: _Collector,
     ref: str,
@@ -215,6 +237,9 @@ def _check_data(
             f"{ref}: a data source (caseClass) node needs a text 'data.label'.",
             node=nid,
         )
+
+    if ntype in ("caseClass", "placeholder"):
+        _check_classes(out, ref, nid, d, kb)
 
     unknown = sorted(k for k in d if k not in _KNOWN_DATA[ntype])
     if unknown:

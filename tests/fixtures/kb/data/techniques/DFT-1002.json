@@ -1,17 +1,21 @@
 {
-    "id": "DFT-1002",
-    "name": "Physical imaging",
-    "description": "Fixture technique DFT-1002.",
-    "synonyms": [
-        "disk imaging"
-    ],
-    "details": "",
-    "subtechniques": [],
-    "examples": [],
-    "weaknesses": [
-        "DFW-1003"
-    ],
-    "CASE_input_classes": [],
-    "CASE_output_classes": [],
-    "references": []
+  "id": "DFT-1002",
+  "name": "Physical imaging",
+  "description": "Fixture technique DFT-1002.",
+  "synonyms": [
+    "disk imaging"
+  ],
+  "details": "",
+  "subtechniques": [],
+  "examples": [],
+  "weaknesses": [
+    "DFW-1003"
+  ],
+  "CASE_input_classes": [
+    "https://ontology.unifiedcyberontology.org/uco/observable/Computer"
+  ],
+  "CASE_output_classes": [
+    "https://ontology.solveit-df.org/solveit/observable/PhysicalImageContainer"
+  ],
+  "references": []
 }

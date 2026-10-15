@@ -11,7 +11,7 @@ The server can also update an existing workflow without disturbing changes made 
 | `workflow_status` | Reports whether the knowledge base loaded, its revision, the output and read directories, and the size limits. |
 | `workflow_find_techniques` | Finds SOLVE-IT technique IDs. Each word of the query is matched separately (so "imaging" also finds "image") across names, synonyms, descriptions, details and example tools; quoted phrases match whole. Each match includes a short description and the technique's input and output classes. |
 | `workflow_create` | Builds a new workflow, lays it out top to bottom or left to right, writes the file, and returns a share link when it fits. |
-| `workflow_update` | Adds, removes or edits nodes, connections and mitigation selections in an existing workflow, read from a file or from a builder share link. |
+| `workflow_update` | Adds, removes or edits nodes, connections and mitigation selections in an existing workflow, read from a file or from a builder share link. Existing nodes stay where they are, unless `relayout` asks for the whole workflow to be laid out again. |
 | `workflow_inspect` | Reads a workflow from a file or a builder share link without changing it, and lists its nodes and connections with their IDs and short labels, ready for an update. |
 | `workflow_validate` | Reports errors (the builder would drop or mis-draw something) and warnings (it opens, but something looks wrong). |
 | `workflow_compile` | Lists each technique step's weaknesses, with ASTM error categories, and whether each mitigation is in place. |
@@ -36,7 +36,7 @@ The builder has no automatic layout, so the server places every node itself:
 - **Layers.** Each step is put one layer after its furthest predecessor. Top to bottom is the default, matching the builder; left to right is available for slides and other wide layouts.
 - **Order within a layer.** Repeated sweeps reorder each layer to reduce crossing connections. Members of the same zone are kept next to each other, so a zone's box never takes in a node that is not a member.
 - **Position.** Each card is moved as close as it can get to the cards it connects to, keeping its order and the gaps. A connection that skips layers has room reserved for it (and its label) in each layer it passes, and its ends are lined up with that room.
-- **Zones.** A zone is drawn round its members, widened if its label needs the room, and its label is put in whichever top corner no connection crosses.
+- **Zones.** Members of a zone are pulled into one column, and anything else in the zone's rows is moved out to the side. A zone is drawn round its members, widened if its label needs the room, and its label is put in whichever top corner no connection crosses.
 - **Connection points.** Branches from a fork leave in the flow direction; a decision's branches leave from its sides and enter each card on its leading edge. A connection that loops back to an earlier step is drawn round the side. For each connection, the server traces the curve the builder will draw, label included, and picks the connection points that keep it clear of other cards.
 
 When a workflow is updated, existing nodes never move. New nodes are placed after their predecessors in the direction the workflow already runs.
@@ -59,22 +59,31 @@ In Claude Desktop, with the server installed, the request was:
 
 Claude then:
 
-1. Searched for candidate techniques with `workflow_find_techniques` (17 searches, from "disk imaging", "remove storage" and "write blocker" to "E01", "boot" and "Expert Witness Format").
-2. Read the details of seven of them, including their input and output classes, with `solveit_get_technique` from the separate [SOLVE-IT MCP server](https://github.com/CKE-Proto/mcp_solve-it), which was also installed.
-3. Built the workflow with a single `workflow_create` call, which validated it against the knowledge base, wrote the file and returned a share link.
+1. Searched for techniques with `workflow_find_techniques` six times: "disk imaging", "remove disk", "write blocker", "hash verification", "seize device" and "E01 EnCase Expert Witness". Each match carries its description and input and output classes, so no further lookups were needed.
+2. Built the workflow with `workflow_create`, which validated it against the knowledge base, wrote the file and returned a share link.
+3. Adjusted it once with `workflow_update`.
+4. Ran `workflow_compile` to summarise the weaknesses and mitigations.
 
-It reported that the workflow passed validation with no warnings.
+![The laptop to E01 workflow in the SOLVE-IT Workflow Builder: after bagging the seized laptop, a decision on whether the disk can be removed leads to hardware or software write blocking, then sectors are copied, the source hash is computed alongside storing the E01 with its metadata, the image is read back and hashed, and the two hashes are compared](docs/images/laptop-to-e01.png)
 
-![The laptop to E01 workflow in the SOLVE-IT Workflow Builder: a decision on whether the disk can be removed leads to two zoned routes, which join before copying sectors, hashing and storing the image in parallel, and verifying the hash](docs/images/laptop-to-e01.png)
+The workflow starts from the seized laptop, bagged as evidence (DFT-1011). Inside an "Access & write protection" zone, a decision asks whether the internal disk can be removed:
 
-The workflow starts from a powered-off laptop and asks whether the internal disk can be removed:
+- **Yes:** remove the disk (DFT-1112), then write protect it with a hardware write blocker (DFT-1012).
+- **No** (for example soldered NVMe storage): boot into a forensic environment (DFT-1113), then write protect with a software write blocker (DFT-1013).
 
-- **Route A (disk removal):** remove the disk (DFT-1112), then write protect it with a hardware write blocker (DFT-1012).
-- **Route B (forensic boot environment):** for a soldered SSD, boot into a forensic environment (DFT-1113), then write protect with a software write blocker (DFT-1013).
+Both routes copy the sectors (DFT-1002). A fork then computes the hash of the data read from the source (DFT-1198) alongside storing the bitstream as an E01 (DFT-1025) with its acquisition metadata (DFT-1208). The stored image is read back (DFT-1043) and hashed (DFT-1199), and the two hashes are compared (DFT-1042), giving a verified E01 image.
 
-Both routes join to copy the sectors (DFT-1002). A fork then computes the hash of the data read (DFT-1198) alongside storing the bitstream in a forensic image format (DFT-1025) with its acquisition metadata (DFT-1208). The paths join again to verify the hash (DFT-1042), ending in a verified E01 image.
+Claude's notes on the result included:
 
-The file is in [examples/laptop-to-e01.json](examples/laptop-to-e01.json), and it can be [opened directly in the builder](https://workflows.hargs.co.uk/#~rZZvb9s2EMa_CsE3SwAlFvXPkt4MndtiBYahWAcMw9AXlHSWuciiS9L2jCDffSfJkcQkioOqLy3xfvfwTvec7-kBlBaypqnnUCNMBTSlv_GdkTtiJPngMiK2vATq0AJ0rsTOtKfpu_zbXmjR_CJyTTip2qCfNBG1AVXzimgjFYY2HF6TD399JFfIuyZrqaDWIu_IDjkITkCYDShSCH1HFGzlAeN5XSB3w1Vx5ArIUQkDJKtkfgfKIVLhyx6VSWkI1AehZL2F2pAjAomWa_M0VtSlg3FVJY9QkOyECfSGYBnEWuS8uc8tXraWeF2a_nNPRYG3rRk-M6ddU52ca1hVXGt89B9NA9936ImmsYsl4obT9J5WPINqKOTVDnMpzCbX62uMypvoFk83xux0uljI2shKlqfbfY06oMhPGaj-oVTlYp_Lhcw0qAPPKlis5Ha3x0LTrw8PzqNKb1BZQC7axrYiQzdsRXpBPKj8tgd97uYKG4QNGHrXNiKDrhdQ_ExHWYIhi4F8UwsEdWm80GvTROM0_ZlPTfT7j3_eMJd5Y2A4CYy8TncQua8CGfPHwGgayMI3KrSAywH4rxTnogZJd9vYjwbWFj-cx1MjQDypyF92ipJLilyrZskAxCG4O7OSjoXleC6pPTYiMHdSE_PcjuNdEMWS2EKySWQQRm9Dul5oIb1ppBt3yGB82xeQnmur9F_qppckHS3ygovtZK_MQHDuwfKCKjewGsrCSYvxgmWHTMbSHk2m92hy1bkYFJdMRsvqgI57U6xbazn_HNvL580JbZVXnxrwCgO5qJ-YDRsNhYKy9xqWdJ32m_F4KvYPiaZF3qWW02PcEc83hds0cRifo1CF57OqrWsbvpKq0YAVr6zCxS_rCEP_ko5f0ukN0okKovi5qFIB2J9DMv05ROyNDtZ8DV8dCkU53jzQjJSWe5VDv4e4KsE8-n337ldclu3uzqQxcnuj-3P9G9xEN4b2osG3wJ4FDp-DlSg3Zprr9KX9XZIruC1vcftWRbv2vnx5fz1KHFqJQytxNOdGkQUOLPByDnhpgaMfB44t8NICx3PAiQWOLXAyB9xujYGcWOTRy-9Bs9fQbBbas6fIHiM2a46YPUjdWh3Y_ix2YLO9H8m257DbigM7mMW2R5HZs8jCWezlK8bFXvi4K1i_ybj-Rt8dpbFnk9mf4_dUB81dQwV5858bHf7-4eF_). The layout shown is the server's own; the workflow was not rearranged by hand.
+- SOLVE-IT has no technique specific to E01 (EWF), so the format is given as a label on DFT-1025, "Store as E01 (EWF)".
+- The compiled workflow has 40 weaknesses across its 12 technique steps: 30 unmitigated, 7 partly mitigated and 3 mitigated by other steps in the workflow. DFT-1002 has the most (10).
+- It first added a second zone round the verification steps, but the steps in between would have fallen inside that zone, so it removed it. Updates can now lay the workflow out again (`relayout`) so that a zone like this holds only its members.
+
+Opened in the builder, the **Compile** view lists each step's weaknesses with their ASTM error categories and the mitigations for each. Here DFW-1176 (unable to remove internal storage) on DFT-1112 counts as mitigated, because the workflow's other route, DFT-1113, implements its mitigation DFM-1126:
+
+![The builder's compiled evaluation for the workflow, listing weaknesses for DFT-1011, DFT-1112 and DFT-1113 with ASTM categories, mitigation status and the mitigation supplied by DFT-1113](docs/images/laptop-to-e01-compile.png)
+
+The file is in [examples/laptop-to-e01.json](examples/laptop-to-e01.json), and it can be [opened directly in the builder](https://workflows.hargs.co.uk/#~rZbBjts2EIZfheChTQB7raFk2fKlCDYJEqANCqRIURQ50NLYIiKLDknv1l343TOS1pLYrexFlJNgifzm5wz_GT_wOzRW6ZKvxIQ75QrkK_6r3Du9Z06zNwEwtZNb5BOeoU2N2rt6NX-Vfj0oq6pfTG-YZEW96WfLVOnQlLJg1mlDWyuOLGvUizd_vn3JNtpgaVXakCfsXrmcAGsjyzSvvjKDO30n1wWyO8tKXU67F5myX-yEgBnLpc0Z6VcblcqzEJdjHRizBn9DyktN2vnq7weuMpJeAr1zx3111FRavC2ktfTqH74Kl8GEH_mqemTSSb564IVcY0FLP6L6l6jNOWl5Wm2ruTx3bm9Xs5kunS709nhzKEkUZulxjaZ9qc12dkj1TK8tmvo0s1u92x8oXfzz6TQ5yxOdPIdpXqqvB3yUl0S1PBEtO33tmvfV7tdv_5hCAMB7wLADZpiqut41L6o4xIvCuOMRyT4W-ZbqViW0LWmVfbbGpkCY_dKPEg3KFgLqMPEV2QCiD5wPAyFuytTX_b958IDxIHA-XzxTYdgHLi4AxTMVesDlcOnjsAZCIKLLxMA7c9IRyVlfzte8qTsIEB1sRzY5L-sRIBgUBaKxC4RXREGy9JAwiIzm8fOQgajuR2vOyvJM2q7NePGGLRXFTaFgHgYX44nAP0J44QiNS2EBV2waecWHYQdFYXM_IQniK4lOPOQFD0WNKUWQXEl05F0oiAe7pxDNtaKneNo_P9Wdmjpof6hcaqJWF3eo3DTb1K3z8We_ff6eH2mOyOJ9RbuljVKV_2mm0POowW3b-mDR3LMwXj6V-ipN0Vr2E7s3yiHbG015cc3ee-oSMaUup2dAe1MSa2jPuqDMnk6fJxyzbX_cYHXZrT6YFNvhI80W3bnXN9_e0Uirp-9aO6d3U9uua7_Q3Jk63p4NhQcWHjgcAw49cOiBo6fgAjduGNuZ9C9KSxck8oJEXpD5GPVzDzz3wMsx4PhCWuKnYKO2-bPy8kGzF3izvWF0xTOs_rp8-PQbvuxFXniRYy_yYsyRlh548eNylXjgpQdOxoDrcdSRE4_c-_g9aLiEhlFo36vgdwEY1QbAtyv4jQBGdQLwXQr-pYdoFNs3KvgtAEb1APC92vyH-VFs343gdxiIv4NNU8Ni0cwYGh0Pp9M3). It is the same workflow rebuilt with the current server, which writes the data sources' classes as full ontology IRIs (Claude had given them as short names, which the server now expands); the layout is the server's own.
 
 ## Installation
 

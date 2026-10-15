@@ -1042,3 +1042,22 @@ def test_inspect_caps_technique_labels_and_title(runner: FakeRunner, dirs: dict[
     label = res["nodes"][0]["label"]
     assert len(label) <= 81
     assert "{" not in label
+
+
+def test_create_expands_short_class_names(runner: FakeRunner) -> None:
+    kb_classes = server.get_state().kb.class_iris()
+    assert kb_classes, "the fixture knowledge base declares classes"
+    iri = kb_classes[0]
+    short = iri.rstrip("/").rsplit("/", 1)[-1]
+    spec = {
+        "nodes": [
+            {"kind": "data_source", "key": "d", "label": "Thing", "classes": [short, "Nowhere"]},
+            {"kind": "technique", "key": "t", "technique_id": "DFT-1001"},
+        ],
+        "edges": [{"source": "d", "target": "t"}],
+    }
+    res = call("workflow_create", {"workflow": spec})
+    assert res["ok"] is True, res
+    ds = next(n for n in written(res)["nodes"] if n["type"] == "caseClass")
+    assert ds["data"]["classes"] == [iri, "Nowhere"]
+    assert any(w["code"] == "class_not_iri" and "Nowhere" in w["message"] for w in res["warnings"])

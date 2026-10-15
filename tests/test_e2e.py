@@ -90,6 +90,9 @@ def test_readme_example_is_valid_and_its_layout_is_stable() -> None:
     text = path.read_text(encoding="utf-8")
     wf = read_workflow(text)
     assert not has_errors(validate_workflow(wf, None))
-    members = {"n17": ["n19", "n4"], "n18": ["n5", "n6"]}
+    from mcp_solveit_workflows.layout import zone_members_by_box
+
+    members = zone_members_by_box(wf)
+    assert members == {"n17": ["n3", "n4", "n5", "n6", "n7"]}
     assert layout_workflow(wf, direction="down", zone_members=members) == []
     assert wf.to_json_pair()[0] == text

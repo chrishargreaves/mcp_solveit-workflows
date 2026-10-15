@@ -288,3 +288,39 @@ def test_real_knowledge_base_loads() -> None:
         if w is not None:
             categories.update(w.get("categories", []))
     assert categories <= set(ASTM_LABELS)
+
+
+def test_resolve_class_names() -> None:
+    uco = "https://ontology.unifiedcyberontology.org/uco/observable/"
+    sit = "https://ontology.solveit-df.org/solveit/observable/"
+    kb = KnowledgeBase(
+        {
+            "DFT-1": {
+                "id": "DFT-1",
+                "name": "A",
+                "CASE_input_classes": [uco + "Computer", uco + "URLHistoryEntry"],
+                "CASE_output_classes": [
+                    sit + "PhysicalImageContainer",
+                    uco + "urlHistoryEntry",
+                    uco + "hash",
+                    "https://ontology.unifiedcyberontology.org/uco/types/Hash",
+                ],
+            }
+        },
+        {},
+        {},
+    )
+    assert kb.resolve_class("Computer") == uco + "Computer"
+    assert kb.resolve_class("computer") == uco + "Computer"
+    assert kb.resolve_class("observable/Computer") == uco + "Computer"
+    assert kb.resolve_class("PhysicalImageContainer") == sit + "PhysicalImageContainer"
+    assert (
+        kb.resolve_class("uco-core:Thing")
+        == "https://ontology.unifiedcyberontology.org/uco/core/Thing"
+    )
+    assert kb.resolve_class(uco + "Anything") == uco + "Anything"
+    # Exact case wins over a case-variant twin.
+    assert kb.resolve_class("URLHistoryEntry") == uco + "URLHistoryEntry"
+    # Ambiguous ignoring case, and unknown names, are left as given.
+    assert kb.resolve_class("HASH") == "HASH"
+    assert kb.resolve_class("Laptop") == "Laptop"

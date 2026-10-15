@@ -509,6 +509,13 @@ class BuildResult:
 
 
 ParentOf = Callable[[str], str | None]
+# Maps a class name to its full IRI where it can (KnowledgeBase.resolve_class).
+ClassResolver = Callable[[str], str]
+
+
+def _keep(name: str) -> str:
+    return name
+
 
 _BUILDER_TYPE = {
     "technique": "technique",
@@ -531,7 +538,9 @@ def _dedupe(items: Iterable[str]) -> list[str]:
     return list(dict.fromkeys(items))
 
 
-def _node_data(node: Any, parent_of: ParentOf) -> dict[str, Any]:
+def _node_data(
+    node: Any, parent_of: ParentOf, resolve_class: ClassResolver = _keep
+) -> dict[str, Any]:
     data: dict[str, Any] = {}
     if isinstance(node, TechniqueInput):
         parent = parent_of(node.technique_id)
@@ -551,11 +560,11 @@ def _node_data(node: Any, parent_of: ParentOf) -> dict[str, Any]:
         data["name"] = node.name
         _put(data, "description", node.description)
         _put(data, "details", node.details)
-        _put(data, "inputClasses", list(node.input_classes))
-        _put(data, "outputClasses", list(node.output_classes))
+        _put(data, "inputClasses", _dedupe(resolve_class(c) for c in node.input_classes))
+        _put(data, "outputClasses", _dedupe(resolve_class(c) for c in node.output_classes))
     elif isinstance(node, DataSourceInput):
         data["label"] = node.label
-        _put(data, "classes", list(node.classes))
+        _put(data, "classes", _dedupe(resolve_class(c) for c in node.classes))
     elif isinstance(node, ZoneInput):
         # Size is computed by layout from the members' bounding box.
         data.update(label=node.label, w=0, h=0)
@@ -577,6 +586,7 @@ def _apply(
     edges: list[EdgeInput],
     selections: list[SelectionInput],
     parent_of: ParentOf,
+    resolve_class: ClassResolver = _keep,
 ) -> BuildResult:
     """Add nodes, edges and selections to `wf`, all or nothing."""
     existing_nodes = [n for n in wf.nodes if isinstance(n, dict)]
@@ -616,7 +626,13 @@ def _apply(
         btype = _BUILDER_TYPE[node.kind]
         types[node_id] = btype
         new_nodes.append(
-            {"id": node_id, "type": btype, "x": 0, "y": 0, "data": _node_data(node, parent_of)}
+            {
+                "id": node_id,
+                "type": btype,
+                "x": 0,
+                "y": 0,
+                "data": _node_data(node, parent_of, resolve_class),
+            }
         )
         if isinstance(node, ZoneInput):
             members = [resolve(m, f"Zone '{node.key}'") for m in node.members]
@@ -658,7 +674,9 @@ def _apply(
     )
 
 
-def build_workflow(spec: WorkflowInput, parent_of: ParentOf) -> BuildResult:
+def build_workflow(
+    spec: WorkflowInput, parent_of: ParentOf, resolve_class: ClassResolver = _keep
+) -> BuildResult:
     """A new workflow from `spec`. Positions are left at 0,0 for layout to fill."""
     doc: dict[str, Any] = {"version": FORMAT_VERSION}
     cut = False
@@ -678,7 +696,9 @@ def build_workflow(spec: WorkflowInput, parent_of: ParentOf) -> BuildResult:
             "y": round(spec.viewport.y),
             "zoom": round(spec.viewport.zoom * 10000) / 10000,
         }
-    result = _apply(Workflow(doc), spec.nodes, spec.edges, spec.selections, parent_of)
+    result = _apply(
+        Workflow(doc), spec.nodes, spec.edges, spec.selections, parent_of, resolve_class
+    )
     if cut:
         result.warnings.append(
             f"The description was cut to {MAX_DESCRIPTION_LEN} characters, the builder's limit."
@@ -692,10 +712,11 @@ def add_to_workflow(
     edges: list[EdgeInput],
     selections: list[SelectionInput],
     parent_of: ParentOf,
+    resolve_class: ClassResolver = _keep,
 ) -> BuildResult:
     """Append nodes, edges and selections to `wf`. Existing nodes are never changed.
 
     Edges, selections and zone members may refer to new node keys or to
     existing node IDs. On error, `wf` is left unchanged.
     """
-    return _apply(wf, nodes, edges, selections, parent_of)
+    return _apply(wf, nodes, edges, selections, parent_of, resolve_class)

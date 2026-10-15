@@ -446,7 +446,7 @@ def test_data_source_for_later_step_sits_just_before_it() -> None:
 # ---- zones ----
 
 
-def test_zone_box_contains_members_and_warns_for_intruder() -> None:
+def test_zone_box_contains_members_and_moves_a_non_member_out() -> None:
     nodes, edges = chain_spec(4)
     nodes.append(
         {"kind": "zone", "key": "z", "label": "Acquisition", "members": ["s0", "s1", "s3"]}
@@ -463,8 +463,10 @@ def test_zone_box_contains_members_and_warns_for_intruder() -> None:
         assert zy + ZONE_PAD <= y and y + h + ZONE_PAD <= zy + zh
     # Drawn behind: the zone stays a region node, which the builder renders below cards.
     assert zone["type"] == "region"
-    assert len(warnings) == 1
-    assert "Acquisition" in warnings[0] and ids["s2"] in warnings[0]
+    # s2 sits between members in the chain; it is moved out of the zone's box.
+    assert warnings == []
+    sx, sy, sw, sh = rect(node(wf, ids["s2"]))
+    assert sx + sw <= zx or sx >= zx + zw or sy + sh <= zy or sy >= zy + zh
 
 
 def test_zone_without_members_warns() -> None:
@@ -775,3 +777,23 @@ def test_explicit_label_corner_is_kept() -> None:
     zm = {ids[z]: [ids[m] for m in ms] for z, ms in members.items()}
     layout_workflow(wf, zone_members=zm)
     assert node(wf, ids["za"])["data"]["labelCorner"] == "tr"
+
+
+def test_relayout_on_update_keeps_existing_zones_and_clears_new_ones() -> None:
+    from mcp_solveit_workflows.layout import zone_members_by_box
+
+    nodes, edges = chain_spec(5)
+    nodes.append({"kind": "zone", "key": "z", "label": "First", "members": ["s0", "s1"]})
+    res, ids = build(nodes, edges)
+    wf = res.workflow
+    layout_workflow(wf, zone_members=res.zone_members)
+    boxed = zone_members_by_box(wf)
+    assert set(boxed[ids["z"]]) == {ids["s0"], ids["s1"]}
+    # A second zone round s2 and s4 needs s3 moved out, which only a relayout can do.
+    new = _add(
+        wf, [{"kind": "zone", "key": "v", "label": "Second", "members": [ids["s2"], ids["s4"]]}], []
+    )
+    assert place_new_nodes(wf, new, zone_members={new[0]: [ids["s2"], ids["s4"]]})
+    assert layout_workflow(wf, zone_members={**boxed, new[0]: [ids["s2"], ids["s4"]]}) == []
+    assert set(zone_members_by_box(wf)[ids["z"]]) == {ids["s0"], ids["s1"]}
+    assert set(zone_members_by_box(wf)[new[0]]) == {ids["s2"], ids["s4"]}

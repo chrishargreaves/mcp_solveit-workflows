@@ -26,7 +26,7 @@ from __future__ import annotations
 import heapq
 import itertools
 import math
-from collections.abc import Collection, Iterable, Mapping, Sequence
+from collections.abc import Callable, Collection, Iterable, Mapping, Sequence
 from typing import Any, Literal
 
 from .model import FLOW_TYPES, Workflow, is_number
@@ -61,6 +61,9 @@ SIBLING_GAP: dict[str, float] = {"down": 96, "right": 56}
 # the connection's ends are pulled into line with that room.
 DUMMY_SIZE = 24
 DUMMY_PULL = 8.0
+# How strongly a zone's members are pulled towards the zone's mean position,
+# so a zone spanning several layers lines up as one column.
+ZONE_PULL = 2.0
 # Barycentre sweeps when ordering layers, and placement sweeps across the flow.
 ORDER_SWEEPS = 12
 PLACE_SWEEPS = 8
@@ -700,6 +703,15 @@ def _layout_component(
             centre[x] = at + ext / 2
             at += ext + max(gap, ZONE_CLEARANCE)
 
+    # Zone members across all layers, so a zone spanning several layers can be
+    # pulled into one column.
+    zone_items: dict[str, list[_Vertex]] = {}
+    for layer in layers:
+        for x in layer:
+            z = zone_key(x)
+            if z is not None:
+                zone_items.setdefault(z, []).append(x)
+
     def settle(layer: list[_Vertex], nbrs_of: Sequence[Mapping[_Vertex, list[_Vertex]]]) -> None:
         desired = []
         for x in layer:
@@ -709,6 +721,10 @@ def _layout_component(
                     pull = DUMMY_PULL if not (isinstance(x, str) and isinstance(u, str)) else 1.0
                     total += pull * centre[u]
                     weight += pull
+            z = zone_key(x)
+            if z is not None and len(zone_items[z]) > 1:
+                total += ZONE_PULL * _mean([centre[m] for m in zone_items[z]])
+                weight += ZONE_PULL
             desired.append(total / weight if weight else centre[x])
         extents = [size[x][across] for x in layer]
         weights = [1.0 if isinstance(x, str) else DUMMY_PULL for x in layer]
@@ -733,6 +749,8 @@ def _layout_component(
             for layer in reversed(layers[:-1]):
                 settle(layer, (up, down))
 
+    _clear_zone_bands(layers, centre, size, across, zone_items, zone_key, zone_extra or {})
+
     # ---- write positions ----
     origin = min(centre[x] - size[x][across] / 2 for layer in layers for x in layer)
     start = (ORIGIN_X if direction == "down" else ORIGIN_Y) - origin
@@ -754,6 +772,55 @@ def _layout_component(
                 node["y"] = round(start + centre[x] - card_h / 2)
         along = 1 if direction == "down" else 0
         lead += max(size[x][along] for x in real) + LAYER_GAP[direction]
+
+
+def _clear_zone_bands(
+    layers: Sequence[Sequence[_Vertex]],
+    centre: dict[_Vertex, float],
+    size: Mapping[_Vertex, tuple[int, int]],
+    across: int,
+    zone_items: Mapping[str, Sequence[_Vertex]],
+    zone_key: Callable[[_Vertex], str | None],
+    zone_extra: Mapping[str, float],
+) -> None:
+    """Move non-members out of each zone's box.
+
+    A zone's box spans its members' layers and their extent across the flow. In
+    every layer of that span, what lies before the zone (in layer order, or by
+    position in a layer the zone has no member in) moves out to one side, and
+    what lies after it to the other. Run twice so one zone's moves settle
+    against another's.
+    """
+    layer_of = {x: i for i, layer in enumerate(layers) for x in layer}
+    for _ in range(2):
+        for z, items in zone_items.items():
+            if not items:
+                continue
+            half = {x: size[x][across] / 2 for x in items}
+            pad = ZONE_PAD + zone_extra.get(z, 0.0) + PLACE_MARGIN
+            lo = min(centre[x] - half[x] for x in items) - pad
+            hi = max(centre[x] + half[x] for x in items) + pad
+            mid = (lo + hi) / 2
+            first = min(layer_of[x] for x in items)
+            last = max(layer_of[x] for x in items)
+            for i in range(first, last + 1):
+                layer = layers[i]
+                inside = [k for k, x in enumerate(layer) if zone_key(x) == z]
+                if inside:
+                    before, after = layer[: inside[0]], layer[inside[-1] + 1 :]
+                else:
+                    before = [x for x in layer if centre[x] < mid]
+                    after = [x for x in layer if centre[x] >= mid]
+                cards = [x for x in before if isinstance(x, str)]
+                if cards:
+                    shift = min(0.0, lo - max(centre[x] + size[x][across] / 2 for x in cards))
+                    for x in before:
+                        centre[x] += shift
+                cards = [x for x in after if isinstance(x, str)]
+                if cards:
+                    shift = max(0.0, hi - min(centre[x] - size[x][across] / 2 for x in cards))
+                    for x in after:
+                        centre[x] += shift
 
 
 def _mean(values: Sequence[float], default: float = -1.0) -> float:
@@ -1083,6 +1150,43 @@ def _clear_zone_labels(
                 data["labelCorner"] = "tl"
             data["w"] = round(w + grow)
             break
+
+
+def zone_members_by_box(wf: Workflow) -> dict[str, list[str]]:
+    """Each sized zone's members, read from where things are: every node lying
+    wholly inside the zone's box, including zones nested in it.
+
+    The builder keeps no membership, so this is how a zone already in a workflow
+    keeps its contents when the workflow is laid out again.
+    """
+    nodes = _dict_nodes(wf)
+    out: dict[str, list[str]] = {}
+    for zone in nodes:
+        data = zone.get("data")
+        if zone.get("type") != "region" or not isinstance(data, dict):
+            continue
+        zx, zy = _num(zone.get("x")), _num(zone.get("y"))
+        zw, zh = _num(data.get("w")), _num(data.get("h"))
+        if zw <= 0 or zh <= 0:
+            continue
+        inside = []
+        for n in nodes:
+            if n is zone:
+                continue
+            nd = n.get("data")
+            if n.get("type") == "region" and isinstance(nd, dict):
+                x, y, w, h = (
+                    _num(n.get("x")),
+                    _num(n.get("y")),
+                    _num(nd.get("w")),
+                    _num(nd.get("h")),
+                )
+            else:
+                x, y, w, h = _rect(n)
+            if zx <= x and zy <= y and x + w <= zx + zw and y + h <= zy + zh:
+                inside.append(n["id"])
+        out[zone["id"]] = inside
+    return out
 
 
 # ---- update path ----

@@ -24,7 +24,7 @@ from .compile import compile_workflow
 from .config import KB_PATH_VAR, Config
 from .files import MAX_READ_BYTES, FileSafetyError, OutputDir, read_workflow_file
 from .kb import KnowledgeBase, KnowledgeBaseError
-from .layout import infer_direction, layout_workflow, place_new_nodes
+from .layout import infer_direction, layout_workflow, place_new_nodes, zone_members_by_box
 from .model import (
     BUILDER_FORMAT,
     BUILDER_URL,
@@ -386,7 +386,7 @@ def workflow_create(
             if isinstance(workflow, WorkflowInput)
             else WorkflowInput.model_validate(workflow)
         )
-        built = build_workflow(spec, kb.parent_of)
+        built = build_workflow(spec, kb.parent_of, kb.resolve_class)
         wf = built.workflow
         out = OutputDir(state.config.output_dir)
         return _validate_and_write(
@@ -490,6 +490,17 @@ def workflow_update(
         bool,
         Field(description="Also open the workflow in the default browser on this machine."),
     ] = False,
+    relayout: Annotated[
+        bool,
+        Field(
+            description=(
+                "Lay the whole workflow out again instead of only placing new nodes. Use it "
+                "when adding a zone round existing nodes that are not next to each other, or "
+                "after large changes. It moves every node, so arrangements made by hand in "
+                "the builder are lost. Existing zones keep the nodes that lie inside them."
+            )
+        ),
+    ] = False,
 ) -> dict[str, Any]:
     def run() -> dict[str, Any]:
         state = get_state()
@@ -497,10 +508,13 @@ def workflow_update(
         out = OutputDir(state.config.output_dir)
 
         wf, source_path = _load_source(state, source)
+        # Read before the update: new nodes start at 0,0 and could land in a box.
+        boxed = zone_members_by_box(wf) if relayout else {}
 
         updated = apply_update(
             wf,
             parent_of=kb.parent_of,
+            resolve_class=kb.resolve_class,
             add_nodes=list(add_nodes),
             add_edges=list(add_edges),
             remove_ids=list(remove_ids),
@@ -523,11 +537,19 @@ def workflow_update(
             out,
             wf,
             build_warnings=updated.warnings,
-            layout_warnings=place_new_nodes(
-                wf,
-                updated.new_node_ids,
-                direction=direction,
-                zone_members=updated.zone_members,
+            layout_warnings=(
+                layout_workflow(
+                    wf,
+                    direction=direction or infer_direction(wf),
+                    zone_members={**boxed, **updated.zone_members},
+                )
+                if relayout
+                else place_new_nodes(
+                    wf,
+                    updated.new_node_ids,
+                    direction=direction,
+                    zone_members=updated.zone_members,
+                )
             ),
             new_node_ids=updated.new_node_ids,
             pick_target=pick_target,
