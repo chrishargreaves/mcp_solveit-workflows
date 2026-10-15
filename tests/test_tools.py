@@ -206,10 +206,11 @@ def test_degraded_mode_when_kb_path_is_not_a_checkout(tmp_path: Path) -> None:
 def test_find_techniques(runner: FakeRunner) -> None:
     res = call("workflow_find_techniques", {"query": "imaging", "limit": 5})
     assert res["ok"] is True
-    assert res["matches"] == [
-        {"id": "DFT-1002", "name": "Physical imaging", "parent": "DFT-1001"},
-        {"id": "DFT-1003", "name": "Logical imaging", "parent": "DFT-1001"},
+    assert [(m["id"], m["name"], m["parent"]) for m in res["matches"][:2]] == [
+        ("DFT-1002", "Physical imaging", "DFT-1001"),
+        ("DFT-1003", "Logical imaging", "DFT-1001"),
     ]
+    assert {"description", "inputs", "outputs", "matched_all_words"} <= set(res["matches"][0])
     assert {m["parent"] for m in res["matches"] if m["id"] == "DFT-1002"} == {"DFT-1001"}
 
 

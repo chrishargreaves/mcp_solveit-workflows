@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import re
+from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
@@ -198,34 +199,148 @@ class KnowledgeBase:
         return self._parents.get(sub) == parent
 
     def find_techniques(self, query: str, limit: int = 10) -> list[dict[str, Any]]:
-        """Case-insensitive search on technique names and synonyms.
+        """Search techniques word by word, best matches first.
 
-        Ranked: exact name, name prefix, name substring, synonym substring;
-        ties broken by ID.
+        Modelled on the SOLVE-IT library's search (solve_it_library `search`): the
+        query is split into words, with "quoted phrases" kept whole and common
+        words dropped. Each word is matched at the start of a word in the
+        technique's text, after trimming common endings, so "imaging" finds
+        "image" and "verification" finds "verify". A match in the name counts
+        most, then synonyms, description, details and example tools.
+
+        Techniques that match every word come first, then those matching most
+        words; within that, by score, then ID. Each match carries a short
+        description and the technique's CASE input and output classes, so it can
+        be chosen without a separate lookup.
         """
-        q = query.strip().casefold()
-        if not q or limit <= 0:
+        terms, phrases = _parse_query(query)
+        if (not terms and not phrases) or limit <= 0:
             return []
-        ranked: list[tuple[int, str]] = []
+        whole = " ".join(_WORD.findall(query.casefold()))
+        wanted = len(terms) + len(phrases)
+        ranked: list[tuple[int, float, str]] = []
         for tid, item in self._techniques.items():
-            name = str(item.get("name") or "").casefold()
-            if name == q:
-                rank = 0
-            elif name.startswith(q):
-                rank = 1
-            elif q in name:
-                rank = 2
-            elif any(isinstance(s, str) and q in s.casefold() for s in item.get("synonyms") or []):
-                rank = 3
-            else:
+            fields = _search_fields(item)
+            matched = 0
+            score = 0.0
+            for term in terms:
+                best = max((w * _term_fit(term, words) for w, words, _text in fields), default=0.0)
+                if best:
+                    matched += 1
+                    score += best
+            for phrase in phrases:
+                best = max((w for w, _words, text in fields if phrase in text), default=0.0)
+                if best:
+                    matched += 1
+                    score += 2 * best
+            if not matched:
                 continue
-            ranked.append((rank, tid))
+            # The whole query as the name or a synonym, or inside one.
+            names = [
+                fields[0][2],
+                *(" ".join(_WORD.findall(s.casefold())) for s in _synonyms(item)),
+            ]
+            if whole and whole in names:
+                score += 100
+            elif whole and any(whole in n for n in names):
+                score += 30
+            ranked.append((-matched, -score, tid))
         ranked.sort()
-        return [
-            {
-                "id": tid,
-                "name": self._techniques[tid].get("name", ""),
-                "parent": self.parent_of(tid),
-            }
-            for _, tid in ranked[:limit]
-        ]
+        return [self._match(tid, wanted, -m) for m, _s, tid in ranked[:limit]]
+
+    def _match(self, tid: str, wanted: int, matched: int) -> dict[str, Any]:
+        item = self._techniques[tid]
+        desc = " ".join(str(item.get("description") or "").split())
+        if len(desc) > MATCH_DESCRIPTION_CHARS:
+            desc = desc[: MATCH_DESCRIPTION_CHARS - 1].rstrip() + "\u2026"
+        return {
+            "id": tid,
+            "name": item.get("name", ""),
+            "parent": self.parent_of(tid),
+            "description": desc,
+            "inputs": _class_names(item.get("CASE_input_classes")),
+            "outputs": _class_names(item.get("CASE_output_classes")),
+            "matched_all_words": matched == wanted,
+        }
+
+
+# ---- technique search ----
+
+# Shortened to this many characters in a search match.
+MATCH_DESCRIPTION_CHARS = 200
+# Field weights: a word matching in the name counts most.
+_FIELD_WEIGHTS = (
+    ("name", 10.0),
+    ("synonyms", 8.0),
+    ("description", 3.0),
+    ("details", 1.0),
+    ("examples", 1.0),
+)
+_WORD = re.compile(r"[0-9a-z]+")
+_PHRASE = re.compile(r'"([^"]+)"')
+# The library's stop words, plus a few common in requests for a workflow.
+_STOP_WORDS = frozenset(
+    "a an and are is not or the was were of to for from in on into with by via "
+    "using use do does how what which".split()
+)
+# Common endings trimmed before matching; the longest that applies is used.
+_ENDINGS = ("ication", "ation", "ition", "ings", "ing", "ion", "ure", "ers", "er", "ed", "es", "s")
+# A query word that only starts a text word counts for this share of the field weight.
+PREFIX_FIT = 0.8
+
+
+def _stem(word: str) -> str:
+    for ending in _ENDINGS:
+        if word.endswith(ending) and len(word) - len(ending) >= 3:
+            return word[: -len(ending)]
+    return word
+
+
+def _parse_query(query: str) -> tuple[list[str], list[str]]:
+    """Stemmed words and quoted phrases (each normalised to single spaces)."""
+    q = query.casefold()
+    phrases = [" ".join(_WORD.findall(p)) for p in _PHRASE.findall(q)]
+    rest = _PHRASE.sub(" ", q)
+    words = [w for w in _WORD.findall(rest) if w not in _STOP_WORDS]
+    terms = list(dict.fromkeys(_stem(w) for w in words))
+    return terms, [p for p in dict.fromkeys(phrases) if p]
+
+
+def _text(value: object) -> str:
+    if isinstance(value, list):
+        return " ".join(str(v) for v in value if isinstance(v, str))
+    return str(value) if isinstance(value, str) else ""
+
+
+def _search_fields(item: Mapping[str, Any]) -> list[tuple[float, list[str], str]]:
+    """(weight, words, normalised text) for each searched field, name first."""
+    out = []
+    for key, weight in _FIELD_WEIGHTS:
+        words = _WORD.findall(_text(item.get(key)).casefold())
+        out.append((weight, words, " ".join(words)))
+    return out
+
+
+def _term_fit(term: str, words: Sequence[str]) -> float:
+    """1 when a text word, or its stem, is the query word; PREFIX_FIT when one only
+    starts with it; 0 for no match."""
+    fit = 0.0
+    for w in words:
+        stem = _stem(w)
+        if term in (w, stem):
+            return 1.0
+        if w.startswith(term) or stem.startswith(term):
+            fit = PREFIX_FIT
+    return fit
+
+
+def _synonyms(item: Mapping[str, Any]) -> list[str]:
+    value = item.get("synonyms")
+    return [s for s in value if isinstance(s, str)] if isinstance(value, list) else []
+
+
+def _class_names(value: object) -> list[str]:
+    """CASE class IRIs, shortened to their last path segment."""
+    if not isinstance(value, list):
+        return []
+    return [v.rstrip("/").rsplit("/", 1)[-1] for v in value if isinstance(v, str) and v]

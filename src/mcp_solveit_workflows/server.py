@@ -299,14 +299,27 @@ def workflow_status() -> dict[str, Any]:
 
 @mcp.tool()
 def workflow_find_techniques(
-    query: Annotated[str, Field(description="Text to match against technique names and synonyms.")],
+    query: Annotated[
+        str,
+        Field(
+            description=(
+                "Words to look for, e.g. 'hash verification' or 'remove disk'. Each word is "
+                "matched separately (imaging also finds image); put a phrase in double "
+                "quotes to match it whole."
+            )
+        ),
+    ],
     limit: Annotated[
         int, Field(ge=1, le=MAX_FIND_LIMIT, description="Maximum number of matches to return.")
     ] = 10,
 ) -> dict[str, Any]:
-    """Find SOLVE-IT technique IDs (DFT-...) by name or synonym, best matches first.
+    """Find SOLVE-IT technique IDs (DFT-...), best matches first.
 
-    Each match gives the ID, name and, for a sub-technique, its parent technique.
+    Searches names, synonyms, descriptions, details and example tools. Techniques
+    matching every word come first (matched_all_words), then those matching most.
+    Each match gives the ID, name, parent technique (for a sub-technique), a short
+    description, and its CASE input and output classes, which is usually enough
+    to choose techniques and order them without looking each one up.
     """
 
     def run() -> dict[str, Any]:

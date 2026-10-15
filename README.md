@@ -9,7 +9,7 @@ The server can also update an existing workflow without disturbing changes made 
 | Tool | What it does |
 |---|---|
 | `workflow_status` | Reports whether the knowledge base loaded, its revision, the output and read directories, and the size limits. |
-| `workflow_find_techniques` | Finds SOLVE-IT technique IDs by matching text against technique names and synonyms. |
+| `workflow_find_techniques` | Finds SOLVE-IT technique IDs. Each word of the query is matched separately (so "imaging" also finds "image") across names, synonyms, descriptions, details and example tools; quoted phrases match whole. Each match includes a short description and the technique's input and output classes. |
 | `workflow_create` | Builds a new workflow, lays it out top to bottom or left to right, writes the file, and returns a share link when it fits. |
 | `workflow_update` | Adds, removes or edits nodes, connections and mitigation selections in an existing workflow, read from a file or from a builder share link. |
 | `workflow_inspect` | Reads a workflow from a file or a builder share link without changing it, and lists its nodes and connections with their IDs and short labels, ready for an update. |

@@ -105,9 +105,18 @@ def test_non_json_files_are_ignored(tmp_path: Path) -> None:
 
 def test_find_hash_is_ranked(kb: KnowledgeBase) -> None:
     results = kb.find_techniques("hash")
-    # name prefix, then name substring, then synonym substring
-    assert [r["id"] for r in results] == ["DFT-1004", "DFT-1006", "DFT-1005"]
-    assert results[0] == {"id": "DFT-1004", "name": "Hashing", "parent": None}
+    ids = [r["id"] for r in results]
+    # Name matches first (whole word, then word start), then synonym and description.
+    assert ids[:3] == ["DFT-1004", "DFT-1006", "DFT-1005"]
+    assert results[0] == {
+        "id": "DFT-1004",
+        "name": "Hashing",
+        "parent": None,
+        "description": "Fixture technique DFT-1004.",
+        "inputs": [],
+        "outputs": [],
+        "matched_all_words": True,
+    }
 
 
 def test_find_exact_match_ranks_first(kb: KnowledgeBase) -> None:
@@ -118,10 +127,53 @@ def test_find_exact_match_ranks_first(kb: KnowledgeBase) -> None:
 def test_find_reports_parent_and_matches_synonyms(kb: KnowledgeBase) -> None:
     results = kb.find_techniques("imaging")
     ids = [r["id"] for r in results]
-    # Both names contain "imaging" as a substring; ties broken by id.
-    assert ids == ["DFT-1002", "DFT-1003"]
-    assert all(r["parent"] == "DFT-1001" for r in results)
+    assert ids[:2] == ["DFT-1002", "DFT-1003"]
+    assert all(r["parent"] == "DFT-1001" for r in results[:2])
     assert kb.find_techniques("disk imag")[0]["id"] == "DFT-1002"
+
+
+def test_find_matches_each_word_and_word_forms(kb: KnowledgeBase) -> None:
+    # Neither phrase appears whole; each word does, in some form.
+    assert kb.find_techniques("verifying images")[0]["id"] == "DFT-1005"
+    top = kb.find_techniques("hash verification")[0]
+    assert top["id"] == "DFT-1005" and top["matched_all_words"] is True
+    # Stop words are ignored.
+    assert kb.find_techniques("the keyword search")[0]["id"] == "DFT-1007"
+
+
+def test_find_whole_synonym_ranks_first(kb: KnowledgeBase) -> None:
+    assert kb.find_techniques("disk imaging")[0]["id"] == "DFT-1002"
+
+
+def test_find_quoted_phrase_must_match_whole(kb: KnowledgeBase) -> None:
+    assert [r["id"] for r in kb.find_techniques('"image integrity"')] == ["DFT-1005"]
+    assert kb.find_techniques('"integrity image"') == []
+
+
+def test_find_partial_matches_come_after_full_ones(kb: KnowledgeBase) -> None:
+    results = kb.find_techniques("hash lookup")
+    # Only DFT-1006 has both words; the hash-only matches follow it.
+    assert results[0]["id"] == "DFT-1006" and results[0]["matched_all_words"] is True
+    assert len(results) > 1 and not any(r["matched_all_words"] for r in results[1:])
+
+
+def test_find_shortens_descriptions_and_class_names() -> None:
+    kb = KnowledgeBase(
+        {
+            "DFT-1": {
+                "id": "DFT-1",
+                "name": "Long one",
+                "description": "word " * 100,
+                "CASE_input_classes": ["https://example.org/ns/Disk"],
+                "CASE_output_classes": ["https://example.org/ns/Bitstream/"],
+            }
+        },
+        {},
+        {},
+    )
+    (match,) = kb.find_techniques("long")
+    assert len(match["description"]) <= 200 and match["description"].endswith("\u2026")
+    assert (match["inputs"], match["outputs"]) == (["Disk"], ["Bitstream"])
 
 
 def test_find_limit_and_empty_query(kb: KnowledgeBase) -> None:
