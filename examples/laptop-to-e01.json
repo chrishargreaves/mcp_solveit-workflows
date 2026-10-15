@@ -1,0 +1,290 @@
+{
+  "version": 2,
+  "title": "Laptop to E01 image",
+  "description": "Acquisition of a laptop's internal storage to an EWF (E01) forensic image, via either disk removal and a hardware write blocker, or a forensic boot environment with software write blocking, followed by hash verification.",
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "caseClass",
+      "x": 433,
+      "y": 80,
+      "data": {
+        "label": "Laptop (powered off)",
+        "classes": [
+          "https://ontology.unifiedcyberontology.org/uco/observable/Computer"
+        ]
+      }
+    },
+    {
+      "id": "n2",
+      "type": "decision",
+      "x": 505,
+      "y": 248,
+      "data": {
+        "question": "Can the internal disk be removed?"
+      }
+    },
+    {
+      "id": "n4",
+      "type": "technique",
+      "x": 252,
+      "y": 648,
+      "data": {
+        "techniqueId": "DFT-1012"
+      }
+    },
+    {
+      "id": "n5",
+      "type": "technique",
+      "x": 625,
+      "y": 460,
+      "data": {
+        "techniqueId": "DFT-1113"
+      }
+    },
+    {
+      "id": "n6",
+      "type": "technique",
+      "x": 615,
+      "y": 648,
+      "data": {
+        "techniqueId": "DFT-1013"
+      }
+    },
+    {
+      "id": "n7",
+      "type": "join",
+      "x": 492,
+      "y": 836,
+      "data": {
+        "mode": "join"
+      }
+    },
+    {
+      "id": "n8",
+      "type": "technique",
+      "x": 375,
+      "y": 948,
+      "data": {
+        "techniqueId": "DFT-1002"
+      }
+    },
+    {
+      "id": "n9",
+      "type": "fork",
+      "x": 395,
+      "y": 1136,
+      "data": {
+        "mode": "fork"
+      }
+    },
+    {
+      "id": "n10",
+      "type": "technique",
+      "x": 120,
+      "y": 1248,
+      "data": {
+        "techniqueId": "DFT-1198"
+      }
+    },
+    {
+      "id": "n11",
+      "type": "technique",
+      "x": 456,
+      "y": 1248,
+      "data": {
+        "techniqueId": "DFT-1025"
+      }
+    },
+    {
+      "id": "n12",
+      "type": "technique",
+      "x": 408,
+      "y": 1436,
+      "data": {
+        "techniqueId": "DFT-1208"
+      }
+    },
+    {
+      "id": "n13",
+      "type": "join",
+      "x": 299,
+      "y": 1624,
+      "data": {
+        "mode": "join"
+      }
+    },
+    {
+      "id": "n14",
+      "type": "technique",
+      "x": 245,
+      "y": 1736,
+      "data": {
+        "techniqueId": "DFT-1042"
+      }
+    },
+    {
+      "id": "n15",
+      "type": "caseClass",
+      "x": 247,
+      "y": 1924,
+      "data": {
+        "label": "E01 image (verified)",
+        "classes": [
+          "https://ontology.solveit-df.org/solveit/observable/PhysicalImageContainer"
+        ]
+      }
+    },
+    {
+      "id": "n17",
+      "type": "region",
+      "x": 196,
+      "y": 392,
+      "data": {
+        "label": "Route A: disk removal",
+        "w": 345,
+        "h": 396,
+        "color": "blue",
+        "labelCorner": "tl"
+      }
+    },
+    {
+      "id": "n18",
+      "type": "region",
+      "x": 553,
+      "y": 392,
+      "data": {
+        "label": "Route B: forensic boot environment",
+        "w": 468,
+        "h": 396,
+        "color": "green"
+      }
+    },
+    {
+      "id": "n19",
+      "type": "technique",
+      "x": 261,
+      "y": 460,
+      "data": {
+        "techniqueId": "DFT-1112"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "n1",
+      "target": "n2",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e3",
+      "source": "n2",
+      "target": "n5",
+      "sourceHandle": "right-s",
+      "targetHandle": "top-t",
+      "label": "No (e.g. soldered SSD)"
+    },
+    {
+      "id": "e5",
+      "source": "n5",
+      "target": "n6",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e6",
+      "source": "n4",
+      "target": "n7",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e7",
+      "source": "n6",
+      "target": "n7",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e8",
+      "source": "n7",
+      "target": "n8",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e9",
+      "source": "n8",
+      "target": "n9",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e10",
+      "source": "n9",
+      "target": "n10",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e11",
+      "source": "n9",
+      "target": "n11",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e12",
+      "source": "n11",
+      "target": "n12",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e13",
+      "source": "n10",
+      "target": "n13",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e14",
+      "source": "n12",
+      "target": "n13",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e15",
+      "source": "n13",
+      "target": "n14",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e16",
+      "source": "n14",
+      "target": "n15",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e17",
+      "source": "n2",
+      "target": "n19",
+      "sourceHandle": "left-s",
+      "targetHandle": "top-t",
+      "label": "Yes"
+    },
+    {
+      "id": "e18",
+      "source": "n19",
+      "target": "n4",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    }
+  ],
+  "selections": {}
+}

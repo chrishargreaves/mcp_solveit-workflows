@@ -77,3 +77,19 @@ def test_stdio_create_then_compile(tmp_path: Path) -> None:
         created["node_ids"]["hash"],
     ]
     assert compiled["steps"][0]["technique_id"] == "DFT-1001"
+
+
+def test_readme_example_is_valid_and_its_layout_is_stable() -> None:
+    """examples/laptop-to-e01.json is shown in the README; keep it valid and keep the
+    picture true to what the server produces."""
+    from mcp_solveit_workflows.layout import layout_workflow
+    from mcp_solveit_workflows.model import read_workflow
+    from mcp_solveit_workflows.validate import has_errors, validate_workflow
+
+    path = Path(__file__).parent.parent / "examples" / "laptop-to-e01.json"
+    text = path.read_text(encoding="utf-8")
+    wf = read_workflow(text)
+    assert not has_errors(validate_workflow(wf, None))
+    members = {"n17": ["n19", "n4"], "n18": ["n5", "n6"]}
+    assert layout_workflow(wf, direction="down", zone_members=members) == []
+    assert wf.to_json_pair()[0] == text

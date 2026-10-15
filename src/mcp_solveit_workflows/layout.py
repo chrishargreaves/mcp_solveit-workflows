@@ -70,6 +70,17 @@ COMPONENT_GAP = 80
 # side of its label corner (RegionNode.tsx; the default corner is "tr").
 ZONE_PAD = 40
 ZONE_LABEL_PAD = 28
+# The label chip (.wf-region-label) is at most 70% of the zone's width, and is
+# about 6.3px per character plus padding when measured; these allow some slack.
+ZONE_LABEL_MAX_SHARE = 0.7
+ZONE_LABEL_CHAR_W = 7.0
+ZONE_LABEL_CHIP_PAD = 24
+# The chip sits 6px from the top and 8px from the side, about 24px tall; a
+# connection should pass at least ZONE_CHIP_MARGIN clear of it.
+ZONE_CHIP_TOP = 6
+ZONE_CHIP_INSET = 8
+ZONE_CHIP_H = 24
+ZONE_CHIP_MARGIN = 10
 # Clearance kept between a newly placed card and any existing one.
 PLACE_MARGIN = 16
 # Gap between a zone member and a neighbour outside the zone, so the zone box,
@@ -574,6 +585,7 @@ def _layout_component(
     direction: Direction,
     zone_of: Mapping[str, str],
     edge_labels: Mapping[tuple[str, str], str],
+    zone_extra: Mapping[str, float] | None = None,
 ) -> None:
     """Sugiyama-style placement of one connected component.
 
@@ -700,10 +712,16 @@ def _layout_component(
             desired.append(total / weight if weight else centre[x])
         extents = [size[x][across] for x in layer]
         weights = [1.0 if isinstance(x, str) else DUMMY_PULL for x in layer]
-        gaps = [
-            gap if zone_key(a) == zone_key(b) else max(gap, ZONE_CLEARANCE)
-            for a, b in itertools.pairwise(layer)
-        ]
+        extra = zone_extra or {}
+
+        def boundary(a: _Vertex, b: _Vertex) -> float:
+            za, zb = zone_key(a), zone_key(b)
+            if za == zb:
+                return gap
+            # Room for each zone's padding, label, and any widening for a long label.
+            return max(gap, ZONE_CLEARANCE) + extra.get(za or "", 0.0) + extra.get(zb or "", 0.0)
+
+        gaps = [boundary(a, b) for a, b in itertools.pairwise(layer)]
         for x, packed in zip(layer, _pack(desired, extents, gaps, weights), strict=True):
             centre[x] = packed
 
@@ -850,6 +868,12 @@ def _nested_members(zid: str, members_of: Mapping[str, Sequence[str]]) -> set[st
     return seen
 
 
+def _zone_label_width(label: str) -> float:
+    """Estimated width of a zone's label chip (.wf-region-label: uppercase 12.5px
+    condensed heading font, 10px padding each side)."""
+    return len(label) * ZONE_LABEL_CHAR_W + ZONE_LABEL_CHIP_PAD
+
+
 def _size_zones(
     wf: Workflow, zone_ids: Iterable[str], zone_members: Mapping[str, Sequence[str]] | None
 ) -> list[str]:
@@ -883,6 +907,13 @@ def _size_zones(
         x0 = math.floor(box[0] - ZONE_PAD)
         y0 = math.floor(box[1] - top)
         x1 = math.ceil(box[0] + box[2] + ZONE_PAD)
+        # The label chip is capped at a share of the zone's width; widen the zone,
+        # evenly on both sides, until the whole label fits.
+        need = math.ceil(_zone_label_width(str(label)) / ZONE_LABEL_MAX_SHARE)
+        if x1 - x0 < need:
+            extra = need - (x1 - x0)
+            x0 -= extra // 2
+            x1 += extra - extra // 2
         y1 = math.ceil(box[1] + box[3] + bottom)
         zone["x"], zone["y"] = x0, y0
         data["w"], data["h"] = x1 - x0, y1 - y0
@@ -926,12 +957,27 @@ def layout_workflow(
     for zid, members in (zone_members or {}).items():
         for m in members:
             zone_of.setdefault(m, zid)
+    # Across a top-to-bottom flow, a zone with a long label is widened on both sides
+    # (see _size_zones). Estimate that from its widest member, so the layout leaves
+    # room for it at the zone's edges.
+    zone_extra: dict[str, float] = {}
+    if direction == "down":
+        for zid, members in (zone_members or {}).items():
+            zone = by_id.get(zid)
+            widths = [estimate_size(by_id[m])[0] for m in members if m in by_id]
+            if zone is None or not widths:
+                continue
+            label = str((zone.get("data") or {}).get("label") or zid)
+            need = _zone_label_width(label) / ZONE_LABEL_MAX_SHARE
+            zone_extra[zid] = max(0.0, (need - (max(widths) + 2 * ZONE_PAD)) / 2)
 
     placed: list[_Rect] = []
     # Right and bottom edges of _bbox(placed), folded component by component.
     right = bottom = -math.inf
     for comp in _components(layered, succ):
-        _layout_component(comp, by_id, succ, pred, depth, direction, zone_of, edge_labels)
+        _layout_component(
+            comp, by_id, succ, pred, depth, direction, zone_of, edge_labels, zone_extra
+        )
         comp_nodes = [by_id[v] for v in comp]
         box = _bbox(_rect(n) for n in comp_nodes)
         if box is not None and placed:
@@ -947,7 +993,96 @@ def layout_workflow(
     _stack_aside(aside, placed, direction)
     warnings = _size_zones(wf, zones, zone_members)
     set_edge_handles(wf, direction=direction)
+    _clear_zone_labels(wf, zones, zone_members)
     return warnings
+
+
+def _strip_clear(xs: Sequence[float], lo: float, hi: float) -> bool:
+    """True when no crossing in `xs` comes within ZONE_CHIP_MARGIN of [lo, hi]."""
+    m = ZONE_CHIP_MARGIN
+    return not any(lo - m <= x <= hi + m for x in xs)
+
+
+def _clear_zone_labels(
+    wf: Workflow, zone_ids: Iterable[str], zone_members: Mapping[str, Sequence[str]] | None
+) -> None:
+    """Keep connections off zone labels.
+
+    A connection into or out of a zone's first card crosses the zone's top strip,
+    where the label chip sits. For a zone with no corner set, use the top-right
+    corner (the builder's default) or the top-left, whichever no connection
+    crosses; if both are crossed, widen the zone on the side that needs less. A
+    zone whose corner is already top-left or top-right keeps it, and is widened on
+    that side if needed. Widening never takes in a card that is not a member, and
+    bottom corners are left alone.
+    """
+    nodes = _dict_nodes(wf)
+    by_id = {n["id"]: n for n in nodes}
+    members_of = zone_members or {}
+    curves = []
+    for e in _dict_edges(wf):
+        s, t = by_id.get(e["source"]), by_id.get(e["target"])
+        if s is None or t is None or not e.get("sourceHandle") or not e.get("targetHandle"):
+            continue
+        curves.append(_curve(s, t, (e["sourceHandle"], e["targetHandle"])))
+    for zid in dict.fromkeys(zone_ids):
+        zone = by_id.get(zid)
+        data = zone.get("data") if zone else None
+        if zone is None or not isinstance(data, dict):
+            continue
+        preset = data.get("labelCorner")
+        if preset not in (None, "tl", "tr"):
+            continue
+        x0, y0 = _num(zone.get("x")), _num(zone.get("y"))
+        w, h = _num(data.get("w")), _num(data.get("h"))
+        if w <= 0 or h <= 0:
+            continue
+        chip_w = min(_zone_label_width(str(data.get("label") or zid)), w * ZONE_LABEL_MAX_SHARE)
+        top, bottom = y0 + ZONE_CHIP_TOP, y0 + ZONE_CHIP_TOP + ZONE_CHIP_H
+        # Where connections cross the label strip.
+        xs = [
+            px
+            for pts in curves
+            for px, py in pts
+            if top - ZONE_CHIP_MARGIN <= py <= bottom + ZONE_CHIP_MARGIN and x0 <= px <= x0 + w
+        ]
+        right_chip = (x0 + w - ZONE_CHIP_INSET - chip_w, x0 + w - ZONE_CHIP_INSET)
+        left_chip = (x0 + ZONE_CHIP_INSET, x0 + ZONE_CHIP_INSET + chip_w)
+
+        if preset == "tl":
+            if _strip_clear(xs, *left_chip):
+                continue
+        elif _strip_clear(xs, *right_chip):
+            continue
+        elif preset is None and _strip_clear(xs, *left_chip):
+            data["labelCorner"] = "tl"
+            continue
+        # Widen: to the right so the chip clears the rightmost crossing, or to the
+        # left so it clears the leftmost one.
+        grow_right = max(xs) + ZONE_CHIP_MARGIN - right_chip[0]
+        grow_left = left_chip[1] - (min(xs) - ZONE_CHIP_MARGIN)
+        members = _nested_members(zid, members_of)
+        others = [
+            _rect(n)
+            for n in nodes
+            if n["id"] not in members and n["id"] != zid and n.get("type") != "region"
+        ]
+        if preset == "tl":
+            options = [(grow_left, "left")]
+        elif preset == "tr":
+            options = [(grow_right, "right")]
+        else:
+            options = sorted([(grow_right, "right"), (grow_left, "left")], key=lambda o: o[0])
+        for grow, side in options:
+            grow = math.ceil(grow)
+            box = (x0 - grow, y0, w + grow, h) if side == "left" else (x0, y0, w + grow, h)
+            if any(_intersects(box, r) for r in others):
+                continue
+            if side == "left":
+                zone["x"] = round(x0 - grow)
+                data["labelCorner"] = "tl"
+            data["w"] = round(w + grow)
+            break
 
 
 # ---- update path ----
@@ -1108,4 +1243,9 @@ def place_new_nodes(
                 e["sourceHandle"] = sh
             if not e.get("targetHandle"):
                 e["targetHandle"] = th
+    _clear_zone_labels(
+        wf,
+        [i for i in new_node_ids if i in by_id and by_id[i].get("type") == "region"],
+        zone_members,
+    )
     return warnings

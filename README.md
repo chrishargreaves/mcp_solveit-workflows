@@ -36,6 +36,7 @@ The builder has no automatic layout, so the server places every node itself:
 - **Layers.** Each step is put one layer after its furthest predecessor. Top to bottom is the default, matching the builder; left to right is available for slides and other wide layouts.
 - **Order within a layer.** Repeated sweeps reorder each layer to reduce crossing connections. Members of the same zone are kept next to each other, so a zone's box never takes in a node that is not a member.
 - **Position.** Each card is moved as close as it can get to the cards it connects to, keeping its order and the gaps. A connection that skips layers has room reserved for it (and its label) in each layer it passes, and its ends are lined up with that room.
+- **Zones.** A zone is drawn round its members, widened if its label needs the room, and its label is put in whichever top corner no connection crosses.
 - **Connection points.** Branches from a fork leave in the flow direction; a decision's branches leave from its sides and enter each card on its leading edge. A connection that loops back to an earlier step is drawn round the side. For each connection, the server traces the curve the builder will draw, label included, and picks the connection points that keep it clear of other cards.
 
 When a workflow is updated, existing nodes never move. New nodes are placed after their predecessors in the direction the workflow already runs.
@@ -49,6 +50,25 @@ Share links are long, and changing a single character breaks them. The tool desc
 ### Updating a workflow edited in the builder
 
 If a workflow has been opened and changed in the builder since the server wrote it, those changes are only in the builder. Before asking for an update, either export the workflow from the builder or copy a link with **Share link**, and give that to `workflow_update` as its source. `workflow_inspect` lists the node IDs in that source, so new connections and changes can name existing nodes. The update keeps every existing node's position and data, the mitigation selections, and any fields the server does not manage.
+
+## Worked example
+
+In Claude Desktop, with the server installed, the request was:
+
+> Can you use the SOLVE-IT workflow MCP to draw me a SOLVE-IT workflow that goes from laptop to acquired image (say E01)?
+
+Claude built the workflow with this server's tools (and the separate SOLVE-IT knowledge base MCP server, which was also installed). It reported that the workflow passed validation against the knowledge base with no warnings, and returned a share link that opens it in the builder.
+
+![The laptop to E01 workflow in the SOLVE-IT Workflow Builder: a decision on whether the disk can be removed leads to two zoned routes, which join before copying sectors, hashing and storing the image in parallel, and verifying the hash](docs/images/laptop-to-e01.png)
+
+The workflow starts from a powered-off laptop and asks whether the internal disk can be removed:
+
+- **Route A (disk removal):** remove the disk (DFT-1112), then write protect it with a hardware write blocker (DFT-1012).
+- **Route B (forensic boot environment):** for a soldered SSD, boot into a forensic environment (DFT-1113), then write protect with a software write blocker (DFT-1013).
+
+Both routes join to copy the sectors (DFT-1002). A fork then computes the hash of the data read (DFT-1198) alongside storing the bitstream in a forensic image format (DFT-1025) with its acquisition metadata (DFT-1208). The paths join again to verify the hash (DFT-1042), ending in a verified E01 image.
+
+The file is in [examples/laptop-to-e01.json](examples/laptop-to-e01.json), and it can be [opened directly in the builder](https://workflows.hargs.co.uk/#~rZZvb9s2EMa_CsE3SwAlFvXPkt4MndtiBYahWAcMw9AXlHSWuciiS9L2jCDffSfJkcQkioOqLy3xfvfwTvec7-kBlBaypqnnUCNMBTSlv_GdkTtiJPngMiK2vATq0AJ0rsTOtKfpu_zbXmjR_CJyTTip2qCfNBG1AVXzimgjFYY2HF6TD399JFfIuyZrqaDWIu_IDjkITkCYDShSCH1HFGzlAeN5XSB3w1Vx5ArIUQkDJKtkfgfKIVLhyx6VSWkI1AehZL2F2pAjAomWa_M0VtSlg3FVJY9QkOyECfSGYBnEWuS8uc8tXraWeF2a_nNPRYG3rRk-M6ddU52ca1hVXGt89B9NA9936ImmsYsl4obT9J5WPINqKOTVDnMpzCbX62uMypvoFk83xux0uljI2shKlqfbfY06oMhPGaj-oVTlYp_Lhcw0qAPPKlis5Ha3x0LTrw8PzqNKb1BZQC7axrYiQzdsRXpBPKj8tgd97uYKG4QNGHrXNiKDrhdQ_ExHWYIhi4F8UwsEdWm80GvTROM0_ZlPTfT7j3_eMJd5Y2A4CYy8TncQua8CGfPHwGgayMI3KrSAywH4rxTnogZJd9vYjwbWFj-cx1MjQDypyF92ipJLilyrZskAxCG4O7OSjoXleC6pPTYiMHdSE_PcjuNdEMWS2EKySWQQRm9Dul5oIb1ppBt3yGB82xeQnmur9F_qppckHS3ygovtZK_MQHDuwfKCKjewGsrCSYvxgmWHTMbSHk2m92hy1bkYFJdMRsvqgI57U6xbazn_HNvL580JbZVXnxrwCgO5qJ-YDRsNhYKy9xqWdJ32m_F4KvYPiaZF3qWW02PcEc83hds0cRifo1CF57OqrWsbvpKq0YAVr6zCxS_rCEP_ko5f0ukN0okKovi5qFIB2J9DMv05ROyNDtZ8DV8dCkU53jzQjJSWe5VDv4e4KsE8-n337ldclu3uzqQxcnuj-3P9G9xEN4b2osG3wJ4FDp-DlSg3Zprr9KX9XZIruC1vcftWRbv2vnx5fz1KHFqJQytxNOdGkQUOLPByDnhpgaMfB44t8NICx3PAiQWOLXAyB9xujYGcWOTRy-9Bs9fQbBbas6fIHiM2a46YPUjdWh3Y_ix2YLO9H8m257DbigM7mMW2R5HZs8jCWezlK8bFXvi4K1i_ybj-Rt8dpbFnk9mf4_dUB81dQwV5858bHf7-4eF_). The layout shown is the server's own; the workflow was not rearranged by hand.
 
 ## Installation
 

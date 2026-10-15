@@ -699,3 +699,79 @@ def test_zone_grouping_wins_even_when_it_costs_a_crossing(direction: str) -> Non
     wf = res.workflow
     members = {ids["z"]: [ids["a"], ids["c"]]}
     assert layout_workflow(wf, direction=direction, zone_members=members) == []  # type: ignore[arg-type]
+
+
+def test_zone_is_widened_to_fit_a_long_label() -> None:
+    label = "Route B: forensic boot environment, long label"
+    res, ids = build(
+        [tech("a"), {"kind": "zone", "key": "z", "label": label, "members": ["a"]}], []
+    )
+    wf = res.workflow
+    layout_workflow(wf, zone_members={ids["z"]: [ids["a"]]})
+    zone, a = node(wf, ids["z"]), node(wf, ids["a"])
+    assert zone["data"]["w"] * lay.ZONE_LABEL_MAX_SHARE >= lay._zone_label_width(label)
+    # Still centred on its member.
+    assert abs((zone["x"] + zone["data"]["w"] / 2) - (a["x"] + CARD_W / 2)) <= 1
+
+
+def _laptop_spec() -> tuple[list[dict[str, Any]], list[dict[str, Any]], dict[str, list[str]]]:
+    nodes = [
+        {"kind": "decision", "key": "d", "question": "Can the internal disk be removed?"},
+        tech("a1"),
+        tech("a2"),
+        tech("b1"),
+        tech("b2"),
+        {"kind": "join", "key": "j"},
+        {"kind": "zone", "key": "za", "label": "Route A: disk removal", "members": ["a1", "a2"]},
+        {
+            "kind": "zone",
+            "key": "zb",
+            "label": "Route B: forensic boot environment",
+            "members": ["b1", "b2"],
+        },
+    ]
+    edges = [
+        {"source": "d", "target": "a1", "label": "Yes"},
+        {"source": "d", "target": "b1", "label": "No (e.g. soldered SSD)"},
+        edge("a1", "a2"),
+        edge("b1", "b2"),
+        edge("a2", "j"),
+        edge("b2", "j"),
+    ]
+    return nodes, edges, {"za": ["a1", "a2"], "zb": ["b1", "b2"]}
+
+
+def test_connections_do_not_cross_zone_labels() -> None:
+    nodes, edges, members = _laptop_spec()
+    res, ids = build(nodes, edges)
+    wf = res.workflow
+    zm = {ids[z]: [ids[m] for m in ms] for z, ms in members.items()}
+    assert layout_workflow(wf, zone_members=zm) == []
+    by_id = {n["id"]: n for n in cards(wf)}
+    curves = [
+        lay._curve(by_id[e["source"]], by_id[e["target"]], (e["sourceHandle"], e["targetHandle"]))
+        for e in wf.edges
+    ]
+    for z in zm:
+        zone = node(wf, z)
+        d = zone["data"]
+        chip_w = lay._zone_label_width(d["label"])
+        assert chip_w <= d["w"] * lay.ZONE_LABEL_MAX_SHARE
+        if d.get("labelCorner") == "tl":
+            lo = zone["x"] + lay.ZONE_CHIP_INSET
+        else:
+            lo = zone["x"] + d["w"] - lay.ZONE_CHIP_INSET - chip_w
+        top = zone["y"] + lay.ZONE_CHIP_TOP
+        for pts in curves:
+            for px, py in pts:
+                assert not (lo <= px <= lo + chip_w and top <= py <= top + lay.ZONE_CHIP_H), z
+
+
+def test_explicit_label_corner_is_kept() -> None:
+    nodes, edges, members = _laptop_spec()
+    nodes[-2] = {**nodes[-2], "label_corner": "tr"}
+    res, ids = build(nodes, edges)
+    wf = res.workflow
+    zm = {ids[z]: [ids[m] for m in ms] for z, ms in members.items()}
+    layout_workflow(wf, zone_members=zm)
+    assert node(wf, ids["za"])["data"]["labelCorner"] == "tr"
