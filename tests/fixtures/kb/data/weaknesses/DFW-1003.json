@@ -1,0 +1,14 @@
+{
+    "id": "DFW-1003",
+    "name": "Bad sectors not reported",
+    "description": "",
+    "categories": [
+        "ASTM_INAC_COR",
+        "ASTM_INCOMP"
+    ],
+    "mitigations": [
+        "DFM-1002",
+        "DFM-1004"
+    ],
+    "references": []
+}

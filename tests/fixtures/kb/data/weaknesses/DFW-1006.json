@@ -1,0 +1,10 @@
+{
+    "id": "DFW-1006",
+    "name": "Results reported for items that do not exist",
+    "description": "",
+    "categories": [
+        "ASTM_INAC_EX"
+    ],
+    "mitigations": [],
+    "references": []
+}

@@ -1,0 +1,7 @@
+{
+    "id": "DFM-1002",
+    "name": "Image with a hardware write blocker and full sector read",
+    "description": "",
+    "technique": "DFT-1002",
+    "references": []
+}

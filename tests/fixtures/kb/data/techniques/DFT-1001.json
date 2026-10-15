@@ -1,0 +1,19 @@
+{
+    "id": "DFT-1001",
+    "name": "Acquire storage media",
+    "description": "Fixture technique DFT-1001.",
+    "synonyms": [],
+    "details": "",
+    "subtechniques": [
+        "DFT-1002",
+        "DFT-1003"
+    ],
+    "examples": [],
+    "weaknesses": [
+        "DFW-1001",
+        "DFW-1002"
+    ],
+    "CASE_input_classes": [],
+    "CASE_output_classes": [],
+    "references": []
+}

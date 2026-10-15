@@ -1,0 +1,17 @@
+{
+    "id": "DFT-1005",
+    "name": "Verify image integrity",
+    "description": "Fixture technique DFT-1005.",
+    "synonyms": [
+        "hash verification"
+    ],
+    "details": "",
+    "subtechniques": [],
+    "examples": [],
+    "weaknesses": [
+        "DFW-1006"
+    ],
+    "CASE_input_classes": [],
+    "CASE_output_classes": [],
+    "references": []
+}

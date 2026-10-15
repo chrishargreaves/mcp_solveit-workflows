@@ -1,0 +1,1218 @@
+{
+  "version": 2,
+  "title": "Synthetic 63-node workflow",
+  "nodes": [
+    {
+      "id": "r_dyn",
+      "type": "region",
+      "x": 551,
+      "y": 370,
+      "data": {
+        "label": "Synthetic step text used",
+        "w": 1345,
+        "h": 310,
+        "labelCorner": "tl"
+      }
+    },
+    {
+      "id": "r_agg",
+      "type": "region",
+      "x": 856,
+      "y": 759,
+      "data": {
+        "label": "Synthetic step text",
+        "w": 697,
+        "h": 289,
+        "labelCorner": "tl"
+      }
+    },
+    {
+      "id": "r_app",
+      "type": "region",
+      "x": 2287,
+      "y": 1005,
+      "data": {
+        "label": "Synthetic ste",
+        "w": 1787,
+        "h": 929,
+        "labelCorner": "tl"
+      }
+    },
+    {
+      "id": "r_os",
+      "type": "region",
+      "x": 1099,
+      "y": 1340,
+      "data": {
+        "label": "Synthetic st",
+        "w": 1119,
+        "h": 586,
+        "labelCorner": "tl"
+      }
+    },
+    {
+      "id": "r_gen",
+      "type": "region",
+      "x": 31,
+      "y": 1348,
+      "data": {
+        "label": "Synthet",
+        "w": 957,
+        "h": 586,
+        "labelCorner": "tl"
+      }
+    },
+    {
+      "id": "f_ai",
+      "type": "fork",
+      "x": 1112,
+      "y": 239,
+      "data": {
+        "mode": "fork"
+      }
+    },
+    {
+      "id": "d_kw_idx",
+      "type": "technique",
+      "x": 589,
+      "y": 513,
+      "data": {
+        "techniqueId": "DFT-1035",
+        "methods": [
+          "DFT-1180"
+        ]
+      }
+    },
+    {
+      "id": "d_kw_ext",
+      "type": "technique",
+      "x": 827,
+      "y": 495,
+      "data": {
+        "techniqueId": "DFT-1035",
+        "methods": [
+          "DFT-1122"
+        ]
+      }
+    },
+    {
+      "id": "d_tl_filt",
+      "type": "technique",
+      "x": 1117,
+      "y": 497,
+      "data": {
+        "techniqueId": "DFT-1201",
+        "methods": [
+          "DFT-1091"
+        ]
+      }
+    },
+    {
+      "id": "d_path",
+      "type": "technique",
+      "x": 1404,
+      "y": 535,
+      "data": {
+        "techniqueId": "DFT-1013"
+      }
+    },
+    {
+      "id": "temp03",
+      "type": "placeholder",
+      "x": 1638,
+      "y": 503,
+      "data": {
+        "tempId": "DFT-temp03",
+        "name": "Synthetic step text used only b"
+      }
+    },
+    {
+      "id": "temp02",
+      "type": "placeholder",
+      "x": 1086,
+      "y": 810,
+      "data": {
+        "tempId": "DFT-temp02",
+        "name": "Synthetic step text used only by the tests; it des",
+        "description": "Synthetic step text used only by the tests; it describes no real process. Example wording for a fixture, written to keep lengths similar. Synthetic step",
+        "inputClasses": [
+          "/uco/observable"
+        ],
+        "outputClasses": [
+          "solveit/observable/CaseDatabase"
+        ]
+      }
+    },
+    {
+      "id": "a1109",
+      "type": "technique",
+      "x": 2576,
+      "y": 1079,
+      "data": {
+        "techniqueId": "DFT-1024"
+      }
+    },
+    {
+      "id": "a1133",
+      "type": "technique",
+      "x": 3105,
+      "y": 1072,
+      "data": {
+        "techniqueId": "DFT-1001"
+      }
+    },
+    {
+      "id": "a1070",
+      "type": "technique",
+      "x": 3476,
+      "y": 1051,
+      "data": {
+        "techniqueId": "DFT-1276"
+      }
+    },
+    {
+      "id": "a1072",
+      "type": "technique",
+      "x": 2360,
+      "y": 1211,
+      "data": {
+        "techniqueId": "DFT-1218"
+      }
+    },
+    {
+      "id": "a1108",
+      "type": "technique",
+      "x": 2816,
+      "y": 1244,
+      "data": {
+        "techniqueId": "DFT-1086"
+      }
+    },
+    {
+      "id": "a1077",
+      "type": "technique",
+      "x": 3160,
+      "y": 1265,
+      "data": {
+        "techniqueId": "DFT-1007"
+      }
+    },
+    {
+      "id": "a1069",
+      "type": "technique",
+      "x": 2333,
+      "y": 1414,
+      "data": {
+        "techniqueId": "DFT-1229"
+      }
+    },
+    {
+      "id": "a1074",
+      "type": "technique",
+      "x": 2678,
+      "y": 1471,
+      "data": {
+        "techniqueId": "DFT-1059"
+      }
+    },
+    {
+      "id": "a1107",
+      "type": "technique",
+      "x": 3324,
+      "y": 1454,
+      "data": {
+        "techniqueId": "DFT-1036"
+      }
+    },
+    {
+      "id": "a1075",
+      "type": "technique",
+      "x": 3576,
+      "y": 1316,
+      "data": {
+        "techniqueId": "DFT-1098"
+      }
+    },
+    {
+      "id": "a1078",
+      "type": "technique",
+      "x": 2716,
+      "y": 1588,
+      "data": {
+        "techniqueId": "DFT-1274"
+      }
+    },
+    {
+      "id": "a1177",
+      "type": "technique",
+      "x": 3104,
+      "y": 1594,
+      "data": {
+        "techniqueId": "DFT-1020"
+      }
+    },
+    {
+      "id": "a1073",
+      "type": "technique",
+      "x": 2313,
+      "y": 1620,
+      "data": {
+        "techniqueId": "DFT-1286"
+      }
+    },
+    {
+      "id": "a1120",
+      "type": "technique",
+      "x": 3421,
+      "y": 1643,
+      "data": {
+        "techniqueId": "DFT-1105"
+      }
+    },
+    {
+      "id": "f_app",
+      "type": "fork",
+      "x": 2872,
+      "y": 1823,
+      "data": {
+        "mode": "fork"
+      }
+    },
+    {
+      "id": "a1169",
+      "type": "technique",
+      "x": 2822,
+      "y": 1868,
+      "data": {
+        "techniqueId": "DFT-1243"
+      }
+    },
+    {
+      "id": "o1180",
+      "type": "technique",
+      "x": 1757,
+      "y": 1389,
+      "data": {
+        "techniqueId": "DFT-1010"
+      }
+    },
+    {
+      "id": "o1149",
+      "type": "technique",
+      "x": 1117,
+      "y": 1412,
+      "data": {
+        "techniqueId": "DFT-1240"
+      }
+    },
+    {
+      "id": "o1098",
+      "type": "technique",
+      "x": 1430,
+      "y": 1398,
+      "data": {
+        "techniqueId": "DFT-1288"
+      }
+    },
+    {
+      "id": "o1097",
+      "type": "technique",
+      "x": 1957,
+      "y": 1497,
+      "data": {
+        "techniqueId": "DFT-1095"
+      }
+    },
+    {
+      "id": "o1096",
+      "type": "technique",
+      "x": 1273,
+      "y": 1514,
+      "data": {
+        "techniqueId": "DFT-1299"
+      }
+    },
+    {
+      "id": "o1190",
+      "type": "technique",
+      "x": 1599,
+      "y": 1501,
+      "data": {
+        "techniqueId": "DFT-1140"
+      }
+    },
+    {
+      "id": "o1116",
+      "type": "technique",
+      "x": 1805,
+      "y": 1653,
+      "data": {
+        "techniqueId": "DFT-1127"
+      }
+    },
+    {
+      "id": "o1066",
+      "type": "technique",
+      "x": 1115,
+      "y": 1639,
+      "data": {
+        "techniqueId": "DFT-1195"
+      }
+    },
+    {
+      "id": "o1065",
+      "type": "technique",
+      "x": 1197,
+      "y": 1796,
+      "data": {
+        "techniqueId": "DFT-1069"
+      }
+    },
+    {
+      "id": "o1068",
+      "type": "technique",
+      "x": 1419,
+      "y": 1651,
+      "data": {
+        "techniqueId": "DFT-1051"
+      }
+    },
+    {
+      "id": "o1185",
+      "type": "technique",
+      "x": 1595,
+      "y": 1798,
+      "data": {
+        "techniqueId": "DFT-1157"
+      }
+    },
+    {
+      "id": "g1121",
+      "type": "technique",
+      "x": 85,
+      "y": 1778,
+      "data": {
+        "techniqueId": "DFT-1017"
+      }
+    },
+    {
+      "id": "g1052",
+      "type": "technique",
+      "x": 421,
+      "y": 1788,
+      "data": {
+        "techniqueId": "DFT-1198"
+      }
+    },
+    {
+      "id": "g1050",
+      "type": "technique",
+      "x": 660,
+      "y": 1775,
+      "data": {
+        "techniqueId": "DFT-1269"
+      }
+    },
+    {
+      "id": "g1184",
+      "type": "technique",
+      "x": 391,
+      "y": 1604,
+      "data": {
+        "techniqueId": "DFT-1201",
+        "methods": [
+          "DFT-1264"
+        ]
+      }
+    },
+    {
+      "id": "b1043",
+      "type": "technique",
+      "x": 1370,
+      "y": 2661,
+      "data": {
+        "techniqueId": "DFT-1109"
+      }
+    },
+    {
+      "id": "f_bottom",
+      "type": "fork",
+      "x": 1449,
+      "y": 2566,
+      "data": {
+        "mode": "fork"
+      }
+    },
+    {
+      "id": "b1059",
+      "type": "technique",
+      "x": 1374,
+      "y": 2396,
+      "data": {
+        "techniqueId": "DFT-1102"
+      }
+    },
+    {
+      "id": "b1168",
+      "type": "technique",
+      "x": 1381,
+      "y": 2259,
+      "data": {
+        "techniqueId": "DFT-1226"
+      }
+    },
+    {
+      "id": "b1060",
+      "type": "technique",
+      "x": 1345,
+      "y": 2122,
+      "data": {
+        "techniqueId": "DFT-1247"
+      }
+    },
+    {
+      "id": "b1053",
+      "type": "technique",
+      "x": 730,
+      "y": 2333,
+      "data": {
+        "techniqueId": "DFT-1181"
+      }
+    },
+    {
+      "id": "f_mid",
+      "type": "fork",
+      "x": 1516,
+      "y": 2009,
+      "data": {
+        "mode": "fork"
+      }
+    },
+    {
+      "id": "n_part",
+      "type": "note",
+      "x": 1587,
+      "y": 2356,
+      "data": {
+        "text": "Synthetic step text used only by the tests; it describes no real process. Example wording for a fixture, written to k"
+      }
+    },
+    {
+      "id": "n_model",
+      "type": "note",
+      "x": 1111,
+      "y": 2757,
+      "data": {
+        "text": "Synthetic step text used only by the tests; it describes no re"
+      }
+    },
+    {
+      "id": "CIwvSCcu",
+      "type": "region",
+      "x": 1066,
+      "y": 2105,
+      "data": {
+        "label": "Synthetic",
+        "w": 808,
+        "h": 824
+      }
+    },
+    {
+      "id": "EsHcKTKJ",
+      "type": "region",
+      "x": 1890,
+      "y": 2107,
+      "data": {
+        "label": "Synthetic st",
+        "w": 596,
+        "h": 464
+      }
+    },
+    {
+      "id": "gCaHbr6u",
+      "type": "technique",
+      "x": 1929,
+      "y": 2162,
+      "data": {
+        "techniqueId": "DFT-1123"
+      }
+    },
+    {
+      "id": "H9DPHxPI",
+      "type": "technique",
+      "x": 1929,
+      "y": 2774,
+      "data": {
+        "techniqueId": "DFT-1212",
+        "methods": [
+          "DFT-1233"
+        ]
+      }
+    },
+    {
+      "id": "FeWGiWRH",
+      "type": "technique",
+      "x": 2207,
+      "y": 2776,
+      "data": {
+        "techniqueId": "DFT-1239"
+      }
+    },
+    {
+      "id": "DibkqaXX",
+      "type": "technique",
+      "x": 2207,
+      "y": 2626,
+      "data": {
+        "techniqueId": "DFT-1152"
+      }
+    },
+    {
+      "id": "hXvzX7DR",
+      "type": "region",
+      "x": 1890,
+      "y": 2584,
+      "data": {
+        "label": "Synthetic step te",
+        "w": 592,
+        "h": 340,
+        "color": "pink"
+      }
+    },
+    {
+      "id": "KOBWaoLZ",
+      "type": "technique",
+      "x": 1928,
+      "y": 2626,
+      "data": {
+        "techniqueId": "DFT-1152"
+      }
+    },
+    {
+      "id": "uG4D0tOq",
+      "type": "technique",
+      "x": 1930,
+      "y": 2371,
+      "data": {
+        "techniqueId": "DFT-1106"
+      }
+    },
+    {
+      "id": "JNiklLrY",
+      "type": "technique",
+      "x": 2208,
+      "y": 2160,
+      "data": {
+        "techniqueId": "DFT-1106"
+      }
+    },
+    {
+      "id": "sN4Bg3GB",
+      "type": "caseClass",
+      "x": 1066,
+      "y": 93,
+      "data": {
+        "label": "Syntheti",
+        "classes": [
+          "https://ontology.unifiedcyberontology.org/uco/identity/Person"
+        ]
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e000",
+      "source": "b1043",
+      "target": "f_bottom",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e001",
+      "source": "f_bottom",
+      "target": "b1059",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e002",
+      "source": "f_bottom",
+      "target": "b1053",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e003",
+      "source": "b1059",
+      "target": "b1168",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e004",
+      "source": "b1168",
+      "target": "b1060",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e005",
+      "source": "b1060",
+      "target": "f_mid",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e006",
+      "source": "f_mid",
+      "target": "g1121",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e007",
+      "source": "f_mid",
+      "target": "g1052",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e008",
+      "source": "f_mid",
+      "target": "g1050",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e009",
+      "source": "g1052",
+      "target": "g1184",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e010",
+      "source": "f_mid",
+      "target": "o1180",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e011",
+      "source": "f_mid",
+      "target": "o1149",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e012",
+      "source": "f_mid",
+      "target": "o1098",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e013",
+      "source": "f_mid",
+      "target": "o1097",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e014",
+      "source": "f_mid",
+      "target": "o1096",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e015",
+      "source": "f_mid",
+      "target": "o1190",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e016",
+      "source": "f_mid",
+      "target": "o1116",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e017",
+      "source": "f_mid",
+      "target": "o1066",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e018",
+      "source": "f_mid",
+      "target": "o1065",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e019",
+      "source": "f_mid",
+      "target": "o1068",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e020",
+      "source": "f_mid",
+      "target": "o1185",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e021",
+      "source": "f_mid",
+      "target": "a1169",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e022",
+      "source": "a1169",
+      "target": "f_app",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e023",
+      "source": "f_app",
+      "target": "a1109",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e024",
+      "source": "f_app",
+      "target": "a1133",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e025",
+      "source": "f_app",
+      "target": "a1070",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e026",
+      "source": "f_app",
+      "target": "a1072",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e027",
+      "source": "f_app",
+      "target": "a1108",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e028",
+      "source": "f_app",
+      "target": "a1077",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e029",
+      "source": "f_app",
+      "target": "a1069",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e030",
+      "source": "f_app",
+      "target": "a1074",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e031",
+      "source": "f_app",
+      "target": "a1107",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e032",
+      "source": "f_app",
+      "target": "a1075",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e033",
+      "source": "f_app",
+      "target": "a1078",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e034",
+      "source": "f_app",
+      "target": "a1177",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e035",
+      "source": "f_app",
+      "target": "a1073",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e036",
+      "source": "f_app",
+      "target": "a1120",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e037",
+      "source": "g1121",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e038",
+      "source": "g1184",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e039",
+      "source": "g1050",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e040",
+      "source": "b1053",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e041",
+      "source": "o1180",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e042",
+      "source": "o1149",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e043",
+      "source": "o1098",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e044",
+      "source": "o1097",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e045",
+      "source": "o1096",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e046",
+      "source": "o1190",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e047",
+      "source": "o1116",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e048",
+      "source": "o1066",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e049",
+      "source": "o1065",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e050",
+      "source": "o1068",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e051",
+      "source": "o1185",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e052",
+      "source": "a1109",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e053",
+      "source": "a1133",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e054",
+      "source": "a1070",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e055",
+      "source": "a1072",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e056",
+      "source": "a1108",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e057",
+      "source": "a1077",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e058",
+      "source": "a1069",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e059",
+      "source": "a1074",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e060",
+      "source": "a1107",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e061",
+      "source": "a1075",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e062",
+      "source": "a1078",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e063",
+      "source": "a1177",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e064",
+      "source": "a1073",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e065",
+      "source": "a1120",
+      "target": "temp02",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "e067",
+      "source": "f_ai",
+      "target": "d_kw_idx",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e068",
+      "source": "d_kw_idx",
+      "target": "temp02",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e069",
+      "source": "f_ai",
+      "target": "d_kw_ext",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e070",
+      "source": "d_kw_ext",
+      "target": "temp02",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e071",
+      "source": "f_ai",
+      "target": "d_tl_filt",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e072",
+      "source": "d_tl_filt",
+      "target": "temp02",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e073",
+      "source": "f_ai",
+      "target": "d_path",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e074",
+      "source": "d_path",
+      "target": "temp02",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e075",
+      "source": "f_ai",
+      "target": "temp03",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "e076",
+      "source": "temp03",
+      "target": "temp02",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "ExgXBgjZ",
+      "source": "FeWGiWRH",
+      "target": "DibkqaXX",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "gMHFWOq9",
+      "source": "H9DPHxPI",
+      "target": "KOBWaoLZ",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "yVYmZTDZ",
+      "source": "KOBWaoLZ",
+      "target": "uG4D0tOq",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "tEQoxPIx",
+      "source": "uG4D0tOq",
+      "target": "gCaHbr6u",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "ECTrPCT8",
+      "source": "DibkqaXX",
+      "target": "JNiklLrY",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "AzgJOOp3",
+      "source": "gCaHbr6u",
+      "target": "f_mid",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "FPQkjtVE",
+      "source": "JNiklLrY",
+      "target": "f_mid",
+      "sourceHandle": "top-s",
+      "targetHandle": "bottom-t"
+    },
+    {
+      "id": "bCFeUdEq",
+      "source": "sN4Bg3GB",
+      "target": "f_ai",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    }
+  ],
+  "selections": {},
+  "viewport": {
+    "x": 160,
+    "y": 47,
+    "zoom": 0.5
+  }
+}

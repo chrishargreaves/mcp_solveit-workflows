@@ -1,0 +1,129 @@
+{
+  "version": 2,
+  "title": "Synthetic small workflow",
+  "description": "Synthetic step text used only by the tests; it describes no real process. Example wording for a fixture, written to keep lengths similar. Synthetic step text used only by the te",
+  "nodes": [
+    {
+      "id": "V2S02D99",
+      "type": "technique",
+      "x": 177,
+      "y": 100,
+      "data": {
+        "techniqueId": "DFT-1030"
+      }
+    },
+    {
+      "id": "QwPjHJ5d",
+      "type": "decision",
+      "x": 471,
+      "y": -92,
+      "data": {
+        "question": "Synthetic step text used only by the tests;"
+      }
+    },
+    {
+      "id": "jbrm6H94",
+      "type": "technique",
+      "x": 617,
+      "y": 180,
+      "data": {
+        "techniqueId": "DFT-1093"
+      }
+    },
+    {
+      "id": "lLXiVLI8",
+      "type": "technique",
+      "x": 424,
+      "y": 361,
+      "data": {
+        "techniqueId": "DFT-1283"
+      }
+    },
+    {
+      "id": "m9QtSmR3",
+      "type": "technique",
+      "x": 416,
+      "y": 502,
+      "data": {
+        "techniqueId": "DFT-1255"
+      }
+    },
+    {
+      "id": "trdgsUsU",
+      "type": "technique",
+      "x": 410,
+      "y": -270,
+      "data": {
+        "techniqueId": "DFT-1032"
+      }
+    },
+    {
+      "id": "ePPlidGa",
+      "type": "technique",
+      "x": 624,
+      "y": 51,
+      "data": {
+        "techniqueId": "DFT-1139"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "mI5tiykv",
+      "source": "QwPjHJ5d",
+      "target": "V2S02D99",
+      "sourceHandle": "left-s",
+      "targetHandle": "top-t",
+      "label": "Syntheti"
+    },
+    {
+      "id": "isrzwPIO",
+      "source": "V2S02D99",
+      "target": "lLXiVLI8",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "pTvY0gbj",
+      "source": "jbrm6H94",
+      "target": "lLXiVLI8",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "Rjt9Rx9a",
+      "source": "trdgsUsU",
+      "target": "QwPjHJ5d",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "NAFJhIWO",
+      "source": "lLXiVLI8",
+      "target": "m9QtSmR3",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "9nrw5WS1",
+      "source": "QwPjHJ5d",
+      "target": "ePPlidGa",
+      "sourceHandle": "right-s",
+      "targetHandle": "top-t",
+      "label": "Syntheti"
+    },
+    {
+      "id": "ldm87oBP",
+      "source": "ePPlidGa",
+      "target": "jbrm6H94",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    }
+  ],
+  "selections": {},
+  "viewport": {
+    "x": 241,
+    "y": 358,
+    "zoom": 1.1206
+  }
+}

@@ -1,0 +1,12 @@
+{
+    "id": "DFW-1002",
+    "name": "Acquisition alters source data",
+    "description": "",
+    "categories": [
+        "ASTM_INAC_ALT"
+    ],
+    "mitigations": [
+        "DFM-1002"
+    ],
+    "references": []
+}

@@ -1,0 +1,60 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mcp-solveit-workflows"
+version = "0.1.0"
+description = "MCP server for building SOLVE-IT Workflow Builder workflows"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [{ name = "Chris Hargreaves" }]
+keywords = ["mcp", "solve-it", "digital-forensics", "workflow"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "mcp>=1.30,<2",
+    "pydantic>=2.7,<3",
+]
+
+[project.urls]
+Repository = "https://github.com/chrishargreaves/mcp_solveit-workflows"
+"Workflow Builder" = "https://workflows.hargs.co.uk/"
+
+[project.scripts]
+mcp-solveit-workflows = "mcp_solveit_workflows.server:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "mypy>=1.10",
+    "ruff>=0.5",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mcp_solveit_workflows"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "drift: compares server output with the private Workflow Builder (needs SOLVEIT_BUILDER_REPO)",
+]
+addopts = "-m 'not drift'"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+mypy_path = "src"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "B", "UP"]

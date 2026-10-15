@@ -1,0 +1,16 @@
+{
+    "id": "DFT-1003",
+    "name": "Logical imaging",
+    "description": "Fixture technique DFT-1003.",
+    "synonyms": [],
+    "details": "",
+    "subtechniques": [],
+    "examples": [],
+    "weaknesses": [
+        "DFW-1002",
+        "DFW-1004"
+    ],
+    "CASE_input_classes": [],
+    "CASE_output_classes": [],
+    "references": []
+}

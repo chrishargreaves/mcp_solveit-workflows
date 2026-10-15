@@ -1,0 +1,38 @@
+{
+  "version": 2,
+  "title": "Sample: device seizure and triage",
+  "description": "A small example workflow used to test loading workflows by URL (#fetch= links).",
+  "nodes": [
+    {
+      "id": "n1",
+      "type": "technique",
+      "x": 80,
+      "y": 200,
+      "data": { "techniqueId": "DFT-1005" }
+    },
+    {
+      "id": "n2",
+      "type": "technique",
+      "x": 400,
+      "y": 200,
+      "data": { "techniqueId": "DFT-1001" }
+    },
+    {
+      "id": "n3",
+      "type": "note",
+      "x": 240,
+      "y": 40,
+      "data": { "text": "Loaded from a URL — edit, export as JSON, and submit the update back through GitHub." }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e1",
+      "source": "n1",
+      "target": "n2",
+      "sourceHandle": "right-s",
+      "targetHandle": "left-t"
+    }
+  ],
+  "selections": {}
+}

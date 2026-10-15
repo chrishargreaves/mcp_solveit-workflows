@@ -1,0 +1,15 @@
+{
+    "id": "DFT-1006",
+    "name": "Known file hash lookup",
+    "description": "Fixture technique DFT-1006.",
+    "synonyms": [],
+    "details": "",
+    "subtechniques": [],
+    "examples": [],
+    "weaknesses": [
+        "DFW-1005"
+    ],
+    "CASE_input_classes": [],
+    "CASE_output_classes": [],
+    "references": []
+}

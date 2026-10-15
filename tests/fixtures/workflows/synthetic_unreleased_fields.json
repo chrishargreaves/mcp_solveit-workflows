@@ -1,0 +1,69 @@
+{
+  "version": 2,
+  "id": "https://example.org/workflows/synthetic-linked",
+  "title": "Synthetic workflow with unreleased fields",
+  "description": "Synthetic step text used only by the tests; it describes no real process. Example wording for a fixture, written to keep lengths similar. Synthetic step text used only by the tests; it describes no real process.",
+  "nodes": [
+    {
+      "id": "n5",
+      "type": "technique",
+      "x": 0,
+      "y": 0,
+      "data": {
+        "techniqueId": "DFT-1229",
+        "methods": [
+          "DFT-1155"
+        ],
+        "target": {
+          "<https://ontology.solveit-df.org/solveit/observable/sourceApplication>/<https://ontology.unifiedcyberontology.org/uco/core/hasFacet>/<https://ontology.unifiedcyberontology.org/uco/observable/applicationIdentifier>": "org.example.app"
+        },
+        "subWorkflow": {
+          "mode": "link",
+          "id": "https://example.org/workflows/synthetic-library",
+          "workflowVersion": "3",
+          "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+          "url": "https://example.org/workflows/synthetic-library.json"
+        }
+      }
+    },
+    {
+      "id": "n6",
+      "type": "technique",
+      "x": 0,
+      "y": 180,
+      "data": {
+        "techniqueId": "DFT-1126",
+        "target": {
+          "<https://ontology.solveit-df.org/solveit/observable/sourceApplication>/<https://ontology.unifiedcyberontology.org/uco/core/hasFacet>/<https://ontology.unifiedcyberontology.org/uco/observable/applicationIdentifier>": "org.example.app"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "e6",
+      "source": "n5",
+      "target": "n6",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    }
+  ],
+  "selections": {},
+  "evaluations": {
+    "n5/n1|DFW-1243": {
+      "inherent": {
+        "likelihood": 2,
+        "likelihoodNote": "Synthetic step text used only by the tests; it describes no real process. Example wording for a fixture, written to keep lengths similar",
+        "impact": 3,
+        "impactNote": "Synthetic step text used only by the tests; it describes no real process. Example wordin",
+        "detectability": 3,
+        "detectabilityNote": "Synthetic step text used only by the tests; it describes no rea"
+      },
+      "residual": {
+        "likelihood": 0,
+        "impact": 0,
+        "detectability": 0
+      }
+    }
+  }
+}

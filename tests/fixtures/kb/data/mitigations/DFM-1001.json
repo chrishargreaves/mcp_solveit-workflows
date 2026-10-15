@@ -1,0 +1,7 @@
+{
+    "id": "DFM-1001",
+    "name": "Verify hashes with a second tool",
+    "description": "",
+    "technique": "DFT-1004",
+    "references": []
+}

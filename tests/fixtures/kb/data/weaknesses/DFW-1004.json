@@ -1,0 +1,10 @@
+{
+    "id": "DFW-1004",
+    "name": "Deleted files not included in logical image",
+    "description": "",
+    "categories": [
+        "ASTM_INCOMP"
+    ],
+    "mitigations": [],
+    "references": []
+}

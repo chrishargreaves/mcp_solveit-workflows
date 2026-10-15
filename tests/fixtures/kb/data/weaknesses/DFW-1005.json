@@ -1,0 +1,13 @@
+{
+    "id": "DFW-1005",
+    "name": "Hash collision treated as a match",
+    "description": "",
+    "categories": [
+        "ASTM_INAC_AS",
+        "ASTM_MISINT"
+    ],
+    "mitigations": [
+        "DFM-1001"
+    ],
+    "references": []
+}

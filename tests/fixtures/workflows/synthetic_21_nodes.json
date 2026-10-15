@@ -1,0 +1,372 @@
+{
+  "version": 2,
+  "title": "Synthetic 21-node workflow",
+  "description": "Synthetic step text used only by the tests; it describes no real process. Example wording for a fixture, written to",
+  "nodes": [
+    {
+      "id": "u3BipHI0",
+      "type": "technique",
+      "x": -44,
+      "y": -109,
+      "data": {
+        "techniqueId": "DFT-1109"
+      }
+    },
+    {
+      "id": "cH5ja4rk",
+      "type": "technique",
+      "x": 227,
+      "y": 49,
+      "data": {
+        "techniqueId": "DFT-1102"
+      }
+    },
+    {
+      "id": "MaiAJbMu",
+      "type": "technique",
+      "x": -10,
+      "y": 194,
+      "data": {
+        "techniqueId": "DFT-1226"
+      }
+    },
+    {
+      "id": "6PMKZCGl",
+      "type": "technique",
+      "x": -155,
+      "y": 426,
+      "data": {
+        "techniqueId": "DFT-1247"
+      }
+    },
+    {
+      "id": "38fVjGwK",
+      "type": "fork",
+      "x": 23,
+      "y": 309,
+      "data": {
+        "mode": "fork"
+      }
+    },
+    {
+      "id": "oNomyhS9",
+      "type": "technique",
+      "x": 462,
+      "y": 425,
+      "data": {
+        "techniqueId": "DFT-1006",
+        "methods": [
+          "DFT-1021"
+        ]
+      }
+    },
+    {
+      "id": "fBkw64Hw",
+      "type": "technique",
+      "x": 143,
+      "y": 427,
+      "data": {
+        "techniqueId": "DFT-1006",
+        "methods": [
+          "DFT-1016"
+        ]
+      }
+    },
+    {
+      "id": "X4OmCnlY",
+      "type": "join",
+      "x": 167,
+      "y": 675,
+      "data": {
+        "mode": "join"
+      }
+    },
+    {
+      "id": "CU5J7awI",
+      "type": "technique",
+      "x": 108,
+      "y": 776,
+      "data": {
+        "techniqueId": "DFT-1100"
+      }
+    },
+    {
+      "id": "dUE6SN7q",
+      "type": "technique",
+      "x": 90,
+      "y": 922,
+      "data": {
+        "techniqueId": "DFT-1269"
+      }
+    },
+    {
+      "id": "g982Awyj",
+      "type": "technique",
+      "x": 91,
+      "y": 1075,
+      "data": {
+        "techniqueId": "DFT-1217"
+      }
+    },
+    {
+      "id": "euYPIY1v",
+      "type": "technique",
+      "x": 130,
+      "y": 1232,
+      "data": {
+        "techniqueId": "DFT-1203"
+      }
+    },
+    {
+      "id": "yfv3TrRF",
+      "type": "technique",
+      "x": 89,
+      "y": 1386,
+      "data": {
+        "techniqueId": "DFT-1294"
+      }
+    },
+    {
+      "id": "a95HKiC8",
+      "type": "technique",
+      "x": -1499,
+      "y": -433,
+      "data": {
+        "techniqueId": "DFT-1202"
+      }
+    },
+    {
+      "id": "5qjwcqt4",
+      "type": "technique",
+      "x": -1156,
+      "y": -414,
+      "data": {
+        "techniqueId": "DFT-1120"
+      }
+    },
+    {
+      "id": "1EjP0ObA",
+      "type": "technique",
+      "x": -289,
+      "y": -234,
+      "data": {
+        "techniqueId": "DFT-1255"
+      }
+    },
+    {
+      "id": "KTNNgoPU",
+      "type": "technique",
+      "x": -948,
+      "y": -231,
+      "data": {
+        "techniqueId": "DFT-1030"
+      }
+    },
+    {
+      "id": "YgnzsKwG",
+      "type": "technique",
+      "x": -598,
+      "y": -224,
+      "data": {
+        "techniqueId": "DFT-1283"
+      }
+    },
+    {
+      "id": "ObUthYyD",
+      "type": "placeholder",
+      "x": -443,
+      "y": 896,
+      "data": {
+        "name": "Synthetic step text used only by the tests",
+        "tempId": "DFT-temp01",
+        "inputClasses": [
+          "https://ontology.solveit-df.org/solveit/observable/FileSet"
+        ],
+        "outputClasses": [
+          "https://ontology.solveit-df.org/solveit/observable/HashSet"
+        ],
+        "description": "Synthetic step text used only by the tests; it describes no real process. Exa"
+      }
+    },
+    {
+      "id": "ODOyvLq6",
+      "type": "decision",
+      "x": 19,
+      "y": 25,
+      "data": {
+        "question": "Synthetic step"
+      }
+    },
+    {
+      "id": "TjIeZVMR",
+      "type": "note",
+      "x": 341,
+      "y": 820,
+      "data": {
+        "text": "Synthetic step text used only by the tests; it describes no real process. Exampl"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "id": "ppFwUhj4",
+      "source": "MaiAJbMu",
+      "target": "38fVjGwK",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "A9Xt8k5P",
+      "source": "38fVjGwK",
+      "target": "6PMKZCGl",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "seUIZegn",
+      "source": "38fVjGwK",
+      "target": "fBkw64Hw",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "DcHHjlvr",
+      "source": "38fVjGwK",
+      "target": "oNomyhS9",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "9xajQMC3",
+      "source": "6PMKZCGl",
+      "target": "X4OmCnlY",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "gswTk0EY",
+      "source": "fBkw64Hw",
+      "target": "X4OmCnlY",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "MhFgjPn8",
+      "source": "oNomyhS9",
+      "target": "X4OmCnlY",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "5cl0TfBY",
+      "source": "X4OmCnlY",
+      "target": "CU5J7awI",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "JMpFFJPc",
+      "source": "CU5J7awI",
+      "target": "dUE6SN7q",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "jmweKyKl",
+      "source": "dUE6SN7q",
+      "target": "g982Awyj",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "UTluRwYh",
+      "source": "g982Awyj",
+      "target": "euYPIY1v",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "hAIZd6in",
+      "source": "euYPIY1v",
+      "target": "yfv3TrRF",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "N8gTkY0v",
+      "source": "a95HKiC8",
+      "target": "5qjwcqt4",
+      "sourceHandle": "right-s",
+      "targetHandle": "left-t"
+    },
+    {
+      "id": "SY5IDeDY",
+      "source": "YgnzsKwG",
+      "target": "1EjP0ObA",
+      "sourceHandle": "right-s",
+      "targetHandle": "left-t"
+    },
+    {
+      "id": "ICQsvdgK",
+      "source": "KTNNgoPU",
+      "target": "YgnzsKwG",
+      "sourceHandle": "right-s",
+      "targetHandle": "left-t"
+    },
+    {
+      "id": "QbFlRG73",
+      "source": "ObUthYyD",
+      "target": "dUE6SN7q",
+      "sourceHandle": "right-s",
+      "targetHandle": "left-t"
+    },
+    {
+      "id": "XuKsOV3o",
+      "source": "1EjP0ObA",
+      "target": "u3BipHI0",
+      "sourceHandle": "right-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "GoFL9oko",
+      "source": "5qjwcqt4",
+      "target": "KTNNgoPU",
+      "sourceHandle": "right-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "rBVCEjKJ",
+      "source": "ODOyvLq6",
+      "target": "cH5ja4rk",
+      "sourceHandle": "right-s",
+      "targetHandle": "left-t"
+    },
+    {
+      "id": "lYxwn9X4",
+      "source": "cH5ja4rk",
+      "target": "MaiAJbMu",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "hYD2rrHC",
+      "source": "ODOyvLq6",
+      "target": "MaiAJbMu",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    },
+    {
+      "id": "yJqK9KAE",
+      "source": "u3BipHI0",
+      "target": "ODOyvLq6",
+      "sourceHandle": "bottom-s",
+      "targetHandle": "top-t"
+    }
+  ],
+  "selections": {},
+  "viewport": {
+    "x": 530,
+    "y": -90,
+    "zoom": 0.6941
+  }
+}

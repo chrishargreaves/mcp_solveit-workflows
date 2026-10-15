@@ -1,0 +1,17 @@
+{
+    "id": "DFT-1004",
+    "name": "Hashing",
+    "description": "Fixture technique DFT-1004.",
+    "synonyms": [],
+    "details": "",
+    "subtechniques": [
+        "DFT-1015"
+    ],
+    "examples": [],
+    "weaknesses": [
+        "DFW-1005"
+    ],
+    "CASE_input_classes": [],
+    "CASE_output_classes": [],
+    "references": []
+}

@@ -1,0 +1,16 @@
+{
+    "id": "DFT-1007",
+    "name": "Keyword search",
+    "description": "Fixture technique DFT-1007.",
+    "synonyms": [],
+    "details": "",
+    "subtechniques": [],
+    "examples": [],
+    "weaknesses": [
+        "DFW-1006",
+        "DFW-1999"
+    ],
+    "CASE_input_classes": [],
+    "CASE_output_classes": [],
+    "references": []
+}

@@ -1,0 +1,13 @@
+{
+    "id": "DFW-1001",
+    "name": "Relevant device not acquired",
+    "description": "",
+    "categories": [
+        "ASTM_INCOMP"
+    ],
+    "mitigations": [
+        "DFM-1001",
+        "DFM-1003"
+    ],
+    "references": []
+}

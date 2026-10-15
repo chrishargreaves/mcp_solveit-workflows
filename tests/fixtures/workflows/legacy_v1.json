@@ -1,0 +1,113 @@
+{
+  "v": 1,
+  "tt": "Synthetic legacy workflow",
+  "ds": "Synthetic step text used only by the tests; it describes no real process. Example wording for a fixture, written to keep lengths similar. Synthetic step text used only by the te",
+  "n": [
+    {
+      "i": "V2S02D99",
+      "t": "technique",
+      "x": 177,
+      "y": 100,
+      "d": {
+        "techniqueId": "DFT-1109"
+      }
+    },
+    {
+      "i": "QwPjHJ5d",
+      "t": "decision",
+      "x": 471,
+      "y": -92,
+      "d": {
+        "question": "Synthetic step text used only by t"
+      }
+    },
+    {
+      "i": "jbrm6H94",
+      "t": "technique",
+      "x": 624,
+      "y": 107,
+      "d": {
+        "techniqueId": "DFT-1102"
+      }
+    },
+    {
+      "i": "lLXiVLI8",
+      "t": "technique",
+      "x": 422,
+      "y": 316,
+      "d": {
+        "techniqueId": "DFT-1226"
+      }
+    },
+    {
+      "i": "m9QtSmR3",
+      "t": "technique",
+      "x": 416,
+      "y": 502,
+      "d": {
+        "techniqueId": "DFT-1247"
+      }
+    },
+    {
+      "i": "trdgsUsU",
+      "t": "technique",
+      "x": 410,
+      "y": -270,
+      "d": {
+        "techniqueId": "DFT-1006"
+      }
+    }
+  ],
+  "e": [
+    {
+      "i": "mI5tiykv",
+      "s": "QwPjHJ5d",
+      "t": "V2S02D99",
+      "sh": "left-s",
+      "th": "top-t",
+      "l": "Hardware"
+    },
+    {
+      "i": "ucKGLhu4",
+      "s": "QwPjHJ5d",
+      "t": "jbrm6H94",
+      "sh": "right-s",
+      "th": "top-t",
+      "l": "Software"
+    },
+    {
+      "i": "isrzwPIO",
+      "s": "V2S02D99",
+      "t": "lLXiVLI8",
+      "sh": "bottom-s",
+      "th": "top-t"
+    },
+    {
+      "i": "pTvY0gbj",
+      "s": "jbrm6H94",
+      "t": "lLXiVLI8",
+      "sh": "bottom-s",
+      "th": "top-t"
+    },
+    {
+      "i": "Rjt9Rx9a",
+      "s": "trdgsUsU",
+      "t": "QwPjHJ5d",
+      "sh": "bottom-s",
+      "th": "top-t"
+    },
+    {
+      "i": "NAFJhIWO",
+      "s": "lLXiVLI8",
+      "t": "m9QtSmR3",
+      "sh": "bottom-s",
+      "th": "top-t"
+    }
+  ],
+  "m": {},
+  "vp": {
+    "x": 33,
+    "y": 373,
+    "z": 1.0518
+  }
+}
