@@ -57,12 +57,20 @@ In Claude Desktop, with the server installed, the request was:
 
 > Can you use the SOLVE-IT workflow MCP to draw me a SOLVE-IT workflow that goes from laptop to acquired image (say E01)?
 
-Claude then:
+Claude replied with a share link that opens the workflow in the builder, and an outline of the flow:
+
+![Claude Desktop showing the request, Claude's reply that the workflow is built and validates cleanly against the knowledge base, the share link, and a numbered outline of the flow](docs/images/claude-desktop-request.png)
+
+Along the way, Claude:
 
 1. Searched for techniques with `workflow_find_techniques` six times: "disk imaging", "remove disk", "write blocker", "hash verification", "seize device" and "E01 EnCase Expert Witness". Each match carries its description and input and output classes, so no further lookups were needed.
 2. Built the workflow with `workflow_create`, which validated it against the knowledge base, wrote the file and returned a share link.
 3. Adjusted it once with `workflow_update`.
 4. Ran `workflow_compile` to summarise the weaknesses and mitigations.
+
+![The tool calls Claude Desktop made: six workflow_find_techniques searches, then workflow_create, workflow_update and workflow_compile](docs/images/claude-desktop-tool-calls.png)
+
+The workflow it built, opened in the builder:
 
 ![The laptop to E01 workflow in the SOLVE-IT Workflow Builder: after bagging the seized laptop, a decision on whether the disk can be removed leads to hardware or software write blocking, then sectors are copied, the source hash is computed alongside storing the E01 with its metadata, the image is read back and hashed, and the two hashes are compared](docs/images/laptop-to-e01.png)
 
@@ -73,11 +81,11 @@ The workflow starts from the seized laptop, bagged as evidence (DFT-1011). Insid
 
 Both routes copy the sectors (DFT-1002). A fork then computes the hash of the data read from the source (DFT-1198) alongside storing the bitstream as an E01 (DFT-1025) with its acquisition metadata (DFT-1208). The stored image is read back (DFT-1043) and hashed (DFT-1199), and the two hashes are compared (DFT-1042), giving a verified E01 image.
 
-Claude's notes on the result included:
+Claude finished with some points to note:
 
-- SOLVE-IT has no technique specific to E01 (EWF), so the format is given as a label on DFT-1025, "Store as E01 (EWF)".
-- The compiled workflow has 40 weaknesses across its 12 technique steps: 30 unmitigated, 7 partly mitigated and 3 mitigated by other steps in the workflow. DFT-1002 has the most (10).
-- It first added a second zone round the verification steps, but the steps in between would have fallen inside that zone, so it removed it. Updates can now lay the workflow out again (`relayout`) so that a zone like this holds only its members.
+![Claude's points to note: there is no E01-specific technique, so the format is a label on DFT-1025; the compile summary of 40 weaknesses across 12 steps; and a second zone that was removed because the layout put other steps inside it](docs/images/claude-desktop-notes.png)
+
+The last point found a gap in the server, since fixed: an update now has a `relayout` option that lays the workflow out again so that a zone like this holds only its members.
 
 Opened in the builder, the **Compile** view lists each step's weaknesses with their ASTM error categories and the mitigations for each. Here DFW-1176 (unable to remove internal storage) on DFT-1112 counts as mitigated, because the workflow's other route, DFT-1113, implements its mitigation DFM-1126:
 
