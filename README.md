@@ -127,7 +127,7 @@ Add an entry to `claude_desktop_config.json` (in Claude Desktop, **Settings → 
 
 If the file already has an `mcpServers` section, add `solveit-workflows` inside it rather than adding a second one. Use the full path to `uvx` (`which uvx` on macOS and Linux, `where uvx` on Windows), because Claude Desktop does not start servers with your shell's `PATH`. Quit Claude Desktop fully and reopen it for the tools to appear.
 
-Each time Claude Desktop starts the server, `uvx` checks this repository and runs the latest version on `main`. To stay on one version instead, add it to the URL, for example `git+https://github.com/chrishargreaves/mcp_solveit-workflows@<commit or tag>`.
+Each time Claude Desktop starts the server, `uvx` checks this repository and runs the latest version on `main`. To stay on one version instead, add it to the URL, for example `git+https://github.com/chrishargreaves/mcp_solveit-workflows@v0.1.0` (a release tag) or `@<commit>`.
 
 ### Claude Code
 
