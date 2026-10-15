@@ -11,6 +11,6 @@ First release.
 - Layered layout, top to bottom or left to right, with crossing reduction, zone members kept together, room reserved for connections that skip layers, and connection points chosen so each drawn connection and its label stay clear of other cards. Zones are sized around their members, widened to fit their labels, and labelled in a corner no connection crosses.
 - Validation, compile (weaknesses, ASTM categories and mitigations per step), and update operations that keep builder edits. Connections to or from notes and zones are refused, because the builder draws no connection points on them.
 - Confined file reading and writing, share links with the builder's encoding, and an optional browser opener that starts `open` or `xdg-open` detached, without a shell.
-- Drift check against the deployed builder, and a Claude Desktop setup script.
+- Drift check against the deployed builder.
 - Ontology class names given as short names (Computer), paths (observable/Computer) or prefixed names (uco-observable:Computer) are written as full IRIs when the knowledge base declares exactly one match; validation warns about any class that is not a full IRI.
 - `relayout` option on `workflow_update`, which lays the whole workflow out again, keeping existing zones' contents, so that a zone added round scattered steps holds only its members.

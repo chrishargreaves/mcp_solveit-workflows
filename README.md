@@ -101,24 +101,22 @@ The server needs [uv](https://docs.astral.sh/uv/) and a local clone of the SOLVE
 git clone https://github.com/SOLVE-IT-DF/solve-it.git
 ```
 
-### Claude Desktop (macOS and Linux)
+The server itself does not need cloning: `uvx` fetches it from this repository and runs it.
 
-Run the setup script with the path to the SOLVE-IT clone and, optionally, an output directory:
+### Claude Desktop
 
-```bash
-./setup_claude_desktop.sh /path/to/solve-it
-```
-
-The script installs the locked dependencies, checks that the knowledge base loads, then adds a `solveit-workflows` entry to the Claude Desktop config file (keeping a timestamped backup of the old one). Quit Claude Desktop fully and reopen it for the tools to appear.
-
-On Windows, or to add the entry by hand, put the following in `claude_desktop_config.json`, with the paths changed to suit:
+Add an entry to `claude_desktop_config.json` (in Claude Desktop, **Settings → Developer → Edit Config**), with the path to your SOLVE-IT clone:
 
 ```json
 {
   "mcpServers": {
     "solveit-workflows": {
-      "command": "uv",
-      "args": ["--directory", "/path/to/mcp_solveit-workflows", "run", "mcp-solveit-workflows"],
+      "command": "/full/path/to/uvx",
+      "args": [
+        "--from",
+        "git+https://github.com/chrishargreaves/mcp_solveit-workflows",
+        "mcp-solveit-workflows"
+      ],
       "env": {
         "MCP_APP_SOLVEIT_DATA_PATH": "/path/to/solve-it"
       }
@@ -127,12 +125,25 @@ On Windows, or to add the entry by hand, put the following in `claude_desktop_co
 }
 ```
 
+If the file already has an `mcpServers` section, add `solveit-workflows` inside it rather than adding a second one. Use the full path to `uvx` (`which uvx` on macOS and Linux, `where uvx` on Windows), because Claude Desktop does not start servers with your shell's `PATH`. Quit Claude Desktop fully and reopen it for the tools to appear.
+
+Each time Claude Desktop starts the server, `uvx` checks this repository and runs the latest version on `main`. To stay on one version instead, add it to the URL, for example `git+https://github.com/chrishargreaves/mcp_solveit-workflows@<commit or tag>`.
+
 ### Claude Code
 
 ```bash
 claude mcp add solveit-workflows \
   -e MCP_APP_SOLVEIT_DATA_PATH=/path/to/solve-it \
-  -- uv --directory /path/to/mcp_solveit-workflows run mcp-solveit-workflows
+  -- uvx --from git+https://github.com/chrishargreaves/mcp_solveit-workflows mcp-solveit-workflows
+```
+
+### From a clone
+
+To run your own checkout (for development, or to pin a version), clone this repository and point the command at it instead:
+
+```json
+"command": "/full/path/to/uv",
+"args": ["--directory", "/path/to/mcp_solveit-workflows", "run", "mcp-solveit-workflows"]
 ```
 
 ## Configuration
